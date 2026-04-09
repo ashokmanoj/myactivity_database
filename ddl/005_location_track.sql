@@ -1,7 +1,7 @@
 -- ============================================================================
 -- DDL 005: locations, location_photos
 -- ============================================================================
-SET search_path TO public;
+SET search_path TO myactivity;
 
 CREATE TABLE IF NOT EXISTS locations (
     location_id    SERIAL PRIMARY KEY,

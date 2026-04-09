@@ -2,8 +2,8 @@
 -- DDL 001: Base Schema
 -- Run once. Creates schema + version tracking table.
 -- ============================================================================
-CREATE SCHEMA IF NOT EXISTS public;
-SET search_path TO public;
+CREATE SCHEMA IF NOT EXISTS myactivity;
+SET search_path TO myactivity;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 

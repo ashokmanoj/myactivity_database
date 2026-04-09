@@ -1,7 +1,7 @@
 -- ============================================================================
--- DDL 004: user_tbl, user_information, user_login
+-- DDL 004: user_tbl, user_information
 -- ============================================================================
-SET search_path TO public;
+SET search_path TO myactivity;
 
 CREATE TABLE IF NOT EXISTS user_tbl (
     user_id       SERIAL PRIMARY KEY,
@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS user_information (
     user_info_id        SERIAL PRIMARY KEY,
     user_id             INT NOT NULL UNIQUE REFERENCES user_tbl(user_id),
     company_id          INT REFERENCES company(company_id),
+    password            VARCHAR(255),                       -- bcrypt hashed
+    last_login_at       TIMESTAMPTZ,
     title               VARCHAR(20),
     photo_available     BOOLEAN     NOT NULL DEFAULT FALSE,
     photo_path          VARCHAR(500),
@@ -61,18 +63,5 @@ CREATE TABLE IF NOT EXISTS user_information (
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_user_info_company ON user_information(company_id);
-
-CREATE TABLE IF NOT EXISTS user_login (
-    login_id      SERIAL PRIMARY KEY,
-    user_id       INT         NOT NULL UNIQUE REFERENCES user_tbl(user_id),
-    mobile_number VARCHAR(15) NOT NULL,
-    password      VARCHAR(255) NOT NULL,
-    company_id    INT REFERENCES company(company_id),
-    last_login_at TIMESTAMPTZ,
-    is_active     SMALLINT    NOT NULL DEFAULT 1,
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_login_mobile ON user_login(mobile_number);
 
 INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','004_user_tables.sql') ON CONFLICT DO NOTHING;

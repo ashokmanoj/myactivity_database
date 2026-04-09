@@ -1,7 +1,7 @@
 -- ============================================================================
 -- DDL 003: district, block, instituation, instituation_project_map
 -- ============================================================================
-SET search_path TO public;
+SET search_path TO myactivity;
 
 CREATE TABLE IF NOT EXISTS district (
     district_id   SERIAL PRIMARY KEY,

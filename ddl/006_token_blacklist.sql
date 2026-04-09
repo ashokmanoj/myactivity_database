@@ -1,7 +1,7 @@
 -- ============================================================================
 -- DDL 006: token_blacklist (for JWT logout / revocation)
 -- ============================================================================
-SET search_path TO public;
+SET search_path TO myactivity;
 
 CREATE TABLE IF NOT EXISTS token_blacklist (
     id          SERIAL PRIMARY KEY,

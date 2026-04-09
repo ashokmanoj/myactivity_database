@@ -1,7 +1,7 @@
 -- ============================================================================
 -- DDL 002: project, designation, company
 -- ============================================================================
-SET search_path TO public;
+SET search_path TO myactivity;
 
 CREATE TABLE IF NOT EXISTS project (
     project_id   SERIAL PRIMARY KEY,
