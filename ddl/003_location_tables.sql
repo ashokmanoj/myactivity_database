@@ -1,5 +1,5 @@
 -- ============================================================================
--- DDL 003: district, block, instituation, instituation_project_map
+-- DDL 003: district, block, institution, institution_project_map
 -- ============================================================================
 SET search_path TO myactivity;
 
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS block (
 );
 CREATE INDEX IF NOT EXISTS idx_block_district ON block(district_id);
 
--- NOTE: table name intentionally matches original project spelling "instituation"
-CREATE TABLE IF NOT EXISTS instituation (
+-- NOTE: table name intentionally matches original project spelling "institution"
+CREATE TABLE IF NOT EXISTS institution (
     institute_id     SERIAL PRIMARY KEY,
     institution_name VARCHAR(150) NOT NULL,
     institute_code   VARCHAR(50)  NOT NULL UNIQUE,
@@ -39,14 +39,14 @@ CREATE TABLE IF NOT EXISTS instituation (
     created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
-CREATE INDEX IF NOT EXISTS idx_inst_project  ON instituation(project_id);
-CREATE INDEX IF NOT EXISTS idx_inst_district ON instituation(district_id);
-CREATE INDEX IF NOT EXISTS idx_inst_active   ON instituation(is_active);
+CREATE INDEX IF NOT EXISTS idx_inst_project  ON institution(project_id);
+CREATE INDEX IF NOT EXISTS idx_inst_district ON institution(district_id);
+CREATE INDEX IF NOT EXISTS idx_inst_active   ON institution(is_active);
 
-CREATE TABLE IF NOT EXISTS instituation_project_map (
+CREATE TABLE IF NOT EXISTS institution_project_map (
     institute_project_map_id SERIAL PRIMARY KEY,
     project_id               INT NOT NULL REFERENCES project(project_id),
-    institute_id             INT NOT NULL REFERENCES instituation(institute_id),
+    institute_id             INT NOT NULL REFERENCES institution(institute_id),
     is_active                SMALLINT NOT NULL DEFAULT 1,
     created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),

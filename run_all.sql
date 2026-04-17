@@ -69,35 +69,13 @@
 \i 'functions/block/fn_block_sync.sql'
 
 -- ── Step 3: Functions — Institution ─────────────────────────────────────────
-\i 'functions/institution/fn_institution_get_all.sql'
-\i 'functions/institution/fn_institution_get_by_id.sql'
-\i 'functions/institution/fn_institution_create.sql'
-\i 'functions/institution/fn_institution_update.sql'
-\i 'functions/institution/fn_institution_remove.sql'
-\i 'functions/institution/fn_institution_exists.sql'
-\i 'functions/institution/fn_institution_sync.sql'
+\i 'institution_functions.sql'
 
 -- ── Step 3: Functions — Institution Map ─────────────────────────────────────
-\i 'functions/institution_map/fn_inst_map_get_all.sql'
-\i 'functions/institution_map/fn_inst_map_get_by_id.sql'
-\i 'functions/institution_map/fn_inst_map_create.sql'
-\i 'functions/institution_map/fn_inst_map_update.sql'
-\i 'functions/institution_map/fn_inst_map_remove.sql'
-\i 'functions/institution_map/fn_inst_map_exists.sql'
-\i 'functions/institution_map/fn_inst_map_sync.sql'
+\i 'institution_map_functions.sql'
 
 -- ── Step 3: Functions — Location ────────────────────────────────────────────
-\i 'functions/location/fn_location_get_all.sql'
-\i 'functions/location/fn_location_get_by_id.sql'
-\i 'functions/location/fn_location_create.sql'
-\i 'functions/location/fn_location_update.sql'
-\i 'functions/location/fn_location_remove.sql'
-\i 'functions/location/fn_location_exists.sql'
-\i 'functions/location/fn_location_add_photo.sql'
-\i 'functions/location/fn_location_get_photos.sql'
-\i 'functions/location/fn_location_remove_photo.sql'
-\i 'functions/location/fn_location_photo_exists.sql'
-\i 'functions/location/fn_location_sync.sql'
+\i 'location_functions.sql'
 
 -- ── Step 3: Functions — User Management ─────────────────────────────────────
 \i 'functions/user_management/fn_user_get_all.sql'

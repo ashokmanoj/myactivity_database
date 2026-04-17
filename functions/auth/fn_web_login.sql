@@ -1,14 +1,14 @@
 -- ============================================================================
--- Function: fn_login
--- Description: Finds an active user for login by mobile number and company_id.
---              Joins user_information, user_tbl, company and roles to return
+-- Function: fn_web_login
+-- Description: Finds an active user for web login by email and company_id.
+--              Joins user_information, user_tbl, company, and roles to return
 --              all necessary authentication and session data.
--- Parameters: p_mobile     VARCHAR - user mobile number
+-- Parameters: p_email      VARCHAR - user email address
 --             p_company_id INT     - company identifier
 -- Returns: User record with credentials, profile, company, and role info
 -- ============================================================================
 
-CREATE OR REPLACE FUNCTION fn_login(p_mobile VARCHAR, p_company_id INT)
+CREATE OR REPLACE FUNCTION fn_web_login(p_email VARCHAR, p_company_id INT)
 RETURNS TABLE(
     user_info_id  INT,
     user_id       INT,
@@ -41,7 +41,7 @@ BEGIN
     JOIN user_tbl u ON u.user_id = ui.user_id
     JOIN company c ON ui.company_id = c.company_id
     LEFT JOIN roles r ON ui.role_id = r.role_id
-    WHERE u.mobile_number = p_mobile
+    WHERE LOWER(u.email) = LOWER(p_email)
       AND ui.company_id = p_company_id
       AND u.is_active = 1
       AND ui.is_active = 1;

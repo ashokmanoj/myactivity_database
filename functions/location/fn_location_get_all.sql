@@ -12,9 +12,8 @@ BEGIN
          u.emp_code, u.full_name, u.mobile_number, i.institution_name, i.institute_code
   FROM locations l
   JOIN user_tbl u ON u.user_id = l.user_id
-  LEFT JOIN instituation i ON i.institute_id = l.institution_id
-  WHERE l.is_active = 1
-    AND (p_user_id IS NULL OR l.user_id = p_user_id)
+  LEFT JOIN institution i ON i.institute_id = l.institution_id
+  WHERE l.is_active = 1    AND (p_user_id IS NULL OR l.user_id = p_user_id)
     AND (p_from IS NULL OR l.created_at >= p_from)
     AND (p_to IS NULL OR l.created_at <= p_to);
 END;

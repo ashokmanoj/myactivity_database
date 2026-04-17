@@ -5,9 +5,9 @@ RETURNS TABLE(institute_project_map_id INT, project_id INT, institute_id INT, is
 BEGIN
   RETURN QUERY SELECT m.institute_project_map_id, m.project_id, m.institute_id, m.is_active, m.created_at, m.updated_at,
     p.project_name, p.project_code, i.institution_name, i.institute_code
-  FROM instituation_project_map m
+  FROM institution_project_map m
   JOIN project p ON p.project_id = m.project_id
-  JOIN instituation i ON i.institute_id = m.institute_id
+  JOIN institution i ON i.institute_id = m.institute_id
   WHERE m.is_active = 1
     AND (p_project_id IS NULL OR m.project_id = p_project_id)
     AND (p_from IS NULL OR m.created_at >= p_from)

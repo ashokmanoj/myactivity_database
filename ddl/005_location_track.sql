@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS locations (
     geo_address    VARCHAR(500),
     geo_pincode    VARCHAR(10),
     description    VARCHAR(500),
-    institution_id INT REFERENCES instituation(institute_id),
+    institution_id INT REFERENCES institution(institute_id),
     is_active      SMALLINT    NOT NULL DEFAULT 1,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()

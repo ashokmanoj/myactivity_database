@@ -7,7 +7,7 @@ BEGIN
   RETURN QUERY SELECT i.institute_id, i.institution_name, i.institute_code, i.project_id, i.district_id, i.block_id,
     i.address, i.pincode, i.latitude, i.longitude, i.is_active, i.created_at, i.updated_at,
     p.project_name, p.project_code, d.district_name, b.block_name
-  FROM instituation i
+  FROM institution i
   LEFT JOIN project p ON p.project_id = i.project_id
   LEFT JOIN district d ON d.district_id = i.district_id
   LEFT JOIN block b ON b.block_id = i.block_id
