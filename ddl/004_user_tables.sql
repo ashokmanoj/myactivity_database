@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS user_information (
     executive_name      VARCHAR(150),
     district_of_posting VARCHAR(100),
     block_of_posting    VARCHAR(100),
+    experience_status   VARCHAR(100),
     department          VARCHAR(100),
     designation_id      INT,
     date_of_joining     DATE,
