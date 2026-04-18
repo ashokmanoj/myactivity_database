@@ -12,6 +12,7 @@ RETURNS TABLE(
   experience_status VARCHAR, department VARCHAR, designation_id INT, date_of_joining DATE, date_of_exit DATE,
   qualification VARCHAR, college_name VARCHAR, year_of_passout VARCHAR, total_experience VARCHAR, 
   last_company_name VARCHAR, last_date_of_leaving DATE,
+  referred_by VARCHAR, date_of_exit_comment VARCHAR,
   is_active SMALLINT, created_at TIMESTAMPTZ, updated_at TIMESTAMPTZ,
   emp_code VARCHAR, full_name VARCHAR, date_of_birth DATE, gender VARCHAR, mobile_number VARCHAR, email VARCHAR, nationality VARCHAR,
   company_name VARCHAR, designation VARCHAR
@@ -29,6 +30,7 @@ BEGIN
     ui.experience_status, ui.department, ui.designation_id, ui.date_of_joining, ui.date_of_exit,
     ui.qualification, ui.college_name, ui.year_of_passout, ui.total_experience,
     ui.last_company_name, ui.last_date_of_leaving,
+    ui.referred_by, ui.date_of_exit_comment,
     ui.is_active, ui.created_at, ui.updated_at,
     u.emp_code, u.full_name, u.date_of_birth, u.gender, u.mobile_number, u.email, u.nationality,
     c.company_name, d.designation
