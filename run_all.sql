@@ -92,8 +92,32 @@
 \i 'functions/user_management/fn_user_info_get_by_id.sql'
 \i 'functions/user_management/fn_user_info_get_by_user_id.sql'
 
+-- ── Step 3: Roles & permissions ─────────────────────────────────────────────
+\i 'ddl/007_roles_table.sql'
+\i 'ddl/012_add_verifier_role.sql'
+
+-- ── Step 3b: Distance tracking tables ───────────────────────────────────────
+\i 'ddl/013_distance_tracking.sql'
+
+-- ── Step 3c: Distance functions ──────────────────────────────────────────────
+\i 'functions/distance/fn_distance_start.sql'
+\i 'functions/distance/fn_distance_end.sql'
+\i 'functions/distance/fn_gps_create.sql'
+\i 'functions/distance/fn_gps_get_by_trip.sql'
+\i 'functions/distance/fn_distance_get_by_user.sql'
+\i 'functions/distance/fn_distance_get_all.sql'
+\i 'functions/distance/fn_distance_approval_update.sql'
+\i 'functions/distance/fn_distance_submit.sql'
+\i 'functions/distance/fn_distance_payment.sql'
+\i 'functions/distance/fn_distance_forward.sql'
+\i 'functions/distance/fn_distance_messages_get.sql'
+\i 'functions/distance/fn_distance_bulk_approve.sql'
+\i 'functions/distance/fn_distance_bulk_payment.sql'
+
 -- ── Step 4: Seed Data ───────────────────────────────────────────────────────
 \i 'dml/001_seed_data.sql'
+\i 'dml/002_seed_user_roles.sql'
+\i 'dml/003_seed_verifier_user.sql'
 
 -- ── Done ────────────────────────────────────────────────────────────────────
 \echo '✅ All tables, functions, and seed data created successfully!'
