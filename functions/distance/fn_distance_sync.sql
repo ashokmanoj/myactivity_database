@@ -1,5 +1,12 @@
 SET search_path TO myactivity;
 
+-- Drop all old signatures before recreating with new parameter list
+DROP FUNCTION IF EXISTS fn_distance_sync(INT, VARCHAR, INT, VARCHAR, BIGINT, INT, VARCHAR, BIGINT, INT, INT, INT, VARCHAR);
+DROP FUNCTION IF EXISTS fn_distance_sync(INT, VARCHAR, INT, VARCHAR, BIGINT, VARCHAR, BIGINT, INT, INT, INT, VARCHAR);
+DROP FUNCTION IF EXISTS fn_distance_sync(INT, VARCHAR, VARCHAR, BIGINT, VARCHAR, BIGINT, INT, INT, INT, VARCHAR);
+DROP FUNCTION IF EXISTS fn_distance_sync(INT, VARCHAR, VARCHAR, BIGINT, VARCHAR, BIGINT, INT, INT, VARCHAR);
+DROP FUNCTION IF EXISTS fn_distance_sync(INT, VARCHAR, VARCHAR, BIGINT, VARCHAR, BIGINT, INT, VARCHAR);
+
 CREATE OR REPLACE FUNCTION fn_distance_sync(
     p_user_id                   INT,
     p_vehicle_type              VARCHAR,
