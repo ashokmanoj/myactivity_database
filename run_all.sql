@@ -113,6 +113,7 @@
 \i 'functions/distance/fn_distance_messages_get.sql'
 \i 'functions/distance/fn_distance_bulk_approve.sql'
 \i 'functions/distance/fn_distance_bulk_payment.sql'
+\i 'functions/distance/fn_distance_sync.sql'
 
 -- ── Step 4: Seed Data ───────────────────────────────────────────────────────
 \i 'dml/001_seed_data.sql'
