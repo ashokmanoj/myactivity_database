@@ -99,6 +99,26 @@
 -- ── Step 3b: Distance tracking tables ───────────────────────────────────────
 \i 'ddl/013_distance_tracking.sql'
 
+-- ── Step 3d: Institution verification ────────────────────────────────────────
+\i 'ddl/016_institution_verification.sql'
+\i 'functions/institution/fn_institution_location_view.sql'
+\i 'functions/institution/fn_institution_toggle_verify.sql'
+
+-- ── Step 3e: Location — institution_name column ──────────────────────────────
+\i 'ddl/017_location_add_inst_name.sql'
+
+-- ── Step 3f: Tech Executive ↔ Institution mapping ────────────────────────────
+\i 'ddl/018_tech_exec_mapping.sql'
+\i 'functions/te_mapping/fn_te_map_get_all.sql'
+\i 'functions/te_mapping/fn_te_map_create.sql'
+\i 'functions/te_mapping/fn_te_map_deactivate.sql'
+\i 'functions/te_mapping/fn_te_map_exists.sql'
+\i 'functions/location/fn_location_create.sql'
+\i 'functions/location/fn_location_update.sql'
+\i 'functions/location/fn_location_sync.sql'
+\i 'functions/location/fn_location_get_all.sql'
+\i 'functions/location/fn_location_get_by_id.sql'
+
 -- ── Step 3c: Distance functions ──────────────────────────────────────────────
 \i 'functions/distance/fn_distance_start.sql'
 \i 'functions/distance/fn_distance_end.sql'
