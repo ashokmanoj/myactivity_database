@@ -21,16 +21,17 @@ RETURNS TABLE (
     vehicle_type             VARCHAR,
     state                    VARCHAR,
     district                 VARCHAR,
-    -- Image columns: id + metadata from distance_images (falls back to old string columns)
+    -- Image columns
     start_image_id           INT,
     start_image_name         VARCHAR,
-    start_selfie_pic         VARCHAR,   -- full_path for display (or legacy string)
+    start_selfie_pic         VARCHAR,
     end_image_id             INT,
     end_image_name           VARCHAR,
-    end_selfie_pic           VARCHAR,   -- full_path for display (or legacy string)
+    end_selfie_pic           VARCHAR,
     start_distance_timestamp BIGINT,
     end_distance_timestamp   BIGINT,
     total_distance           INT,
+    gps_distance_km          NUMERIC,   -- haversine distance computed from GPS points
     rate_per_km              NUMERIC,
     required_amount          NUMERIC,
     verifier_amount          NUMERIC,
@@ -83,6 +84,28 @@ BEGIN
         dt.start_distance_timestamp,
         dt.end_distance_timestamp,
         dt.total_distance,
+
+        -- GPS haversine distance (km) computed from stored GPS points
+        ROUND(COALESCE((
+            SELECT SUM(
+                6371.0 * 2.0 * ASIN(SQRT(
+                    POWER(SIN(RADIANS((latitude - prev_lat) / 2.0)), 2) +
+                    COS(RADIANS(prev_lat)) * COS(RADIANS(latitude)) *
+                    POWER(SIN(RADIANS((longitude - prev_lng) / 2.0)), 2)
+                ))
+            )
+            FROM (
+                SELECT
+                    latitude::FLOAT   AS latitude,
+                    longitude::FLOAT  AS longitude,
+                    LAG(latitude::FLOAT)  OVER (ORDER BY timestamp) AS prev_lat,
+                    LAG(longitude::FLOAT) OVER (ORDER BY timestamp) AS prev_lng
+                FROM gps_location
+                WHERE trip_id = dt.id
+            ) gps_sub
+            WHERE gps_sub.prev_lat IS NOT NULL
+        ), 0)::NUMERIC, 2)                                             AS gps_distance_km,
+
         dt.rate_per_km,
         dt.required_amount,
         dt.verifier_amount,
@@ -119,8 +142,8 @@ BEGIN
         COUNT(*) OVER ()                                                AS total_count
 
     FROM distance_tracking dt
-    LEFT JOIN user_tbl         u_exec   ON dt.user_id       = u_exec.user_id
-    LEFT JOIN user_tbl         u_rm     ON dt.rm_user_id    = u_rm.user_id
+    LEFT JOIN user_tbl         u_exec   ON dt.user_id        = u_exec.user_id
+    LEFT JOIN user_tbl         u_rm     ON dt.rm_user_id     = u_rm.user_id
     LEFT JOIN distance_images  di_start ON dt.start_image_id = di_start.id
     LEFT JOIN distance_images  di_end   ON dt.end_image_id   = di_end.id
     WHERE
