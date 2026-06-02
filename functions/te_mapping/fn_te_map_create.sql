@@ -1,28 +1,20 @@
 -- Function: fn_te_map_create  |  Domain: te_mapping
 SET search_path TO myactivity;
 CREATE OR REPLACE FUNCTION fn_te_map_create(
-    p_user_id      INT,
-    p_institute_id INT,
-    p_assigned_by  INT DEFAULT NULL
+  p_project_id     INT,
+  p_district_id    INT,
+  p_block_id       INT,
+  p_institution_id INT,
+  p_user_id        INT,
+  p_rm_user_id     INT DEFAULT NULL
 )
-RETURNS TABLE(
-    map_id       INT,
-    user_id      INT,
-    institute_id INT,
-    assigned_by  INT,
-    is_active    SMALLINT,
-    created_at   TIMESTAMPTZ
-) AS $$
+RETURNS SETOF user_institution_map AS $$
 BEGIN
-    RETURN QUERY
-    INSERT INTO tech_exec_institution_map (user_id, institute_id, assigned_by, is_active, created_at, updated_at)
-    VALUES (p_user_id, p_institute_id, p_assigned_by, 1, NOW(), NOW())
-    RETURNING
-        tech_exec_institution_map.map_id,
-        tech_exec_institution_map.user_id,
-        tech_exec_institution_map.institute_id,
-        tech_exec_institution_map.assigned_by,
-        tech_exec_institution_map.is_active,
-        tech_exec_institution_map.created_at;
+  RETURN QUERY
+  INSERT INTO user_institution_map
+    (project_id, district_id, block_id, institution_id, user_id, rm_user_id, active, created_at, updated_at)
+  VALUES
+    (p_project_id, p_district_id, p_block_id, p_institution_id, p_user_id, p_rm_user_id, 1, NOW(), NOW())
+  RETURNING *;
 END;
 $$ LANGUAGE plpgsql;
