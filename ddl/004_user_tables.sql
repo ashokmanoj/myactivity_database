@@ -87,6 +87,8 @@ CREATE TABLE IF NOT EXISTS user_information (
     last_company_name   VARCHAR(255),
     last_date_of_leaving DATE,
     
+    last_login_at       TIMESTAMPTZ,
+
     is_active           SMALLINT NOT NULL DEFAULT 1,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -113,3 +115,5 @@ ON CONFLICT (user_id) DO NOTHING;
 DELETE FROM schema_versions WHERE version = 'v1.0.0'; -- Clear old duplicates if any
 INSERT INTO schema_versions (version, migration_file) 
 VALUES ('v1.0.0', '004_full_user_rebuild.sql');
+-- Patch: add last_login_at if missing (safe for existing databases)
+ALTER TABLE user_information ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;
