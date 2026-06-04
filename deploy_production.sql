@@ -91,25 +91,6 @@ CREATE TABLE IF NOT EXISTS block (
 );
 CREATE INDEX IF NOT EXISTS idx_block_district ON block(district_id);
 
-CREATE TABLE IF NOT EXISTS institution (
-    institute_id     SERIAL PRIMARY KEY,
-    institution_name VARCHAR(150) NOT NULL,
-    institute_code   VARCHAR(50)  NOT NULL UNIQUE,
-    project_id       INT          NOT NULL REFERENCES project(project_id),
-    district_id      INT          REFERENCES district(district_id),
-    block_id         INT          REFERENCES block(block_id),
-    address          VARCHAR(500),
-    pincode          INT,
-    latitude         NUMERIC(8,6),
-    longitude        NUMERIC(9,6),
-    is_active        SMALLINT     NOT NULL DEFAULT 1,
-    created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
-    updated_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_inst_project  ON institution(project_id);
-CREATE INDEX IF NOT EXISTS idx_inst_district ON institution(district_id);
-CREATE INDEX IF NOT EXISTS idx_inst_active   ON institution(is_active);
-
 CREATE TABLE IF NOT EXISTS institution_project_map (
     institute_project_map_id SERIAL PRIMARY KEY,
     project_id               INT NOT NULL REFERENCES project(project_id),
