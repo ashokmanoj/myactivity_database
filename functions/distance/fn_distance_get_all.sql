@@ -153,10 +153,20 @@ BEGIN
     LEFT JOIN distance_images  di_start ON dt.start_image_id = di_start.id
     LEFT JOIN distance_images  di_end   ON dt.end_image_id   = di_end.id
     WHERE
-        (p_user_id    IS NULL OR dt.user_id    = p_user_id)
-        AND (p_rm_user_id IS NULL OR dt.rm_user_id = p_rm_user_id)
-        AND (p_state   IS NULL OR LOWER(dt.state) = LOWER(p_state))
-        AND (p_status  IS NULL OR dt.payment_status = p_status)
+        (p_user_id IS NULL OR dt.user_id = p_user_id)
+        AND (
+            p_rm_user_id IS NULL
+            OR dt.rm_user_id = p_rm_user_id
+            -- fallback: trip has no stored rm_user_id but executive is mapped to this RM
+            OR (dt.rm_user_id IS NULL AND EXISTS (
+                SELECT 1 FROM user_institution_map uim
+                WHERE uim.user_id    = dt.user_id
+                  AND uim.rm_user_id = p_rm_user_id
+                  AND uim.active     = 1
+            ))
+        )
+        AND (p_state  IS NULL OR LOWER(dt.state) = LOWER(p_state))
+        AND (p_status IS NULL OR dt.payment_status = p_status)
     ORDER BY dt.id DESC
     LIMIT  p_page_size
     OFFSET (p_page - 1) * p_page_size;
