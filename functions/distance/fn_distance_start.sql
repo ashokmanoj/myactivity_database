@@ -31,11 +31,18 @@ BEGIN
         ELSE 3.00
     END;
 
-    -- Auto-lookup RM from mapping if not provided by mobile
+    -- Auto-lookup RM: 1st try user_institution_map, 2nd try reporting_rm name match
     IF p_rm_user_id IS NULL THEN
         SELECT uim.rm_user_id INTO p_rm_user_id
         FROM user_institution_map uim
-        WHERE uim.user_id = p_user_id AND uim.active = 1
+        WHERE uim.user_id = p_user_id AND uim.active = 1 AND uim.rm_user_id IS NOT NULL
+        LIMIT 1;
+    END IF;
+    IF p_rm_user_id IS NULL THEN
+        SELECT u.user_id INTO p_rm_user_id
+        FROM user_tbl u
+        JOIN user_information ui ON ui.user_id = p_user_id
+        WHERE u.full_name = ui.reporting_rm AND u.is_active = 1
         LIMIT 1;
     END IF;
 

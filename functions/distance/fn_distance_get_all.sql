@@ -143,11 +143,17 @@ BEGIN
 
     FROM distance_tracking dt
     LEFT JOIN user_tbl         u_exec   ON dt.user_id        = u_exec.user_id
-    -- RM: use stored rm_user_id first; fall back to user_institution_map for rows where it's NULL
+    -- RM: use stored rm_user_id first; then user_institution_map; then reporting_rm name match
     LEFT JOIN LATERAL (
-        SELECT uim.rm_user_id AS mapped_rm_id FROM user_institution_map uim
-        WHERE uim.user_id = dt.user_id AND uim.active = 1
-        LIMIT 1
+        SELECT COALESCE(
+            (SELECT uim.rm_user_id FROM user_institution_map uim
+             WHERE uim.user_id = dt.user_id AND uim.active = 1 AND uim.rm_user_id IS NOT NULL
+             LIMIT 1),
+            (SELECT u2.user_id FROM user_tbl u2
+             JOIN user_information ui2 ON ui2.user_id = dt.user_id
+             WHERE u2.full_name = ui2.reporting_rm AND u2.is_active = 1
+             LIMIT 1)
+        ) AS mapped_rm_id
     ) uim_rm ON (dt.rm_user_id IS NULL)
     LEFT JOIN user_tbl         u_rm     ON COALESCE(dt.rm_user_id, uim_rm.mapped_rm_id) = u_rm.user_id
     LEFT JOIN distance_images  di_start ON dt.start_image_id = di_start.id
@@ -157,12 +163,20 @@ BEGIN
         AND (
             p_rm_user_id IS NULL
             OR dt.rm_user_id = p_rm_user_id
-            -- fallback: trip has no stored rm_user_id but executive is mapped to this RM
+            -- fallback 1: executive is mapped to this RM in user_institution_map
             OR (dt.rm_user_id IS NULL AND EXISTS (
                 SELECT 1 FROM user_institution_map uim
                 WHERE uim.user_id    = dt.user_id
                   AND uim.rm_user_id = p_rm_user_id
                   AND uim.active     = 1
+            ))
+            -- fallback 2: executive's reporting_rm name matches this RM's full_name
+            OR (dt.rm_user_id IS NULL AND EXISTS (
+                SELECT 1 FROM user_tbl u
+                JOIN user_information ui ON ui.user_id = dt.user_id
+                WHERE u.user_id   = p_rm_user_id
+                  AND u.full_name = ui.reporting_rm
+                  AND u.is_active = 1
             ))
         )
         AND (p_state  IS NULL OR LOWER(dt.state) = LOWER(p_state))
