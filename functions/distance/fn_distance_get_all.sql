@@ -143,7 +143,13 @@ BEGIN
 
     FROM distance_tracking dt
     LEFT JOIN user_tbl         u_exec   ON dt.user_id        = u_exec.user_id
-    LEFT JOIN user_tbl         u_rm     ON dt.rm_user_id     = u_rm.user_id
+    -- RM: use stored rm_user_id first; fall back to user_institution_map for rows where it's NULL
+    LEFT JOIN LATERAL (
+        SELECT rm_user_id FROM user_institution_map
+        WHERE user_id = dt.user_id AND active = 1
+        LIMIT 1
+    ) uim_rm ON (dt.rm_user_id IS NULL)
+    LEFT JOIN user_tbl         u_rm     ON COALESCE(dt.rm_user_id, uim_rm.rm_user_id) = u_rm.user_id
     LEFT JOIN distance_images  di_start ON dt.start_image_id = di_start.id
     LEFT JOIN distance_images  di_end   ON dt.end_image_id   = di_end.id
     WHERE

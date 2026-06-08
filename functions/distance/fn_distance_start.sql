@@ -31,6 +31,14 @@ BEGIN
         ELSE 3.00
     END;
 
+    -- Auto-lookup RM from mapping if not provided by mobile
+    IF p_rm_user_id IS NULL THEN
+        SELECT uim.rm_user_id INTO p_rm_user_id
+        FROM user_institution_map uim
+        WHERE uim.user_id = p_user_id AND uim.active = 1
+        LIMIT 1;
+    END IF;
+
     INSERT INTO distance_tracking (
         user_id, rm_user_id, vehicle_type, state, district,
         start_odo_reading, start_selfie_pic, start_distance_timestamp,
