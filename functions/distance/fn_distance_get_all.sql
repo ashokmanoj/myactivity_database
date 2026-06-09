@@ -1,6 +1,7 @@
 SET search_path TO myactivity;
 
 DROP FUNCTION IF EXISTS fn_distance_get_all(INT, INT, INT, INT, VARCHAR, VARCHAR, VARCHAR);
+DROP FUNCTION IF EXISTS fn_distance_get_all(INT, INT, INT, INT, VARCHAR, VARCHAR, VARCHAR, DATE, DATE);
 DROP FUNCTION IF EXISTS fn_distance_get_all(INT, INT, INT, INT, VARCHAR, VARCHAR);
 
 CREATE OR REPLACE FUNCTION fn_distance_get_all(
@@ -10,7 +11,9 @@ CREATE OR REPLACE FUNCTION fn_distance_get_all(
     p_rm_user_id INT     DEFAULT NULL,
     p_state      VARCHAR DEFAULT NULL,
     p_status     VARCHAR DEFAULT NULL,
-    p_role       VARCHAR DEFAULT NULL   -- current user's distance role for unread count
+    p_role       VARCHAR DEFAULT NULL,  -- current user's distance role for unread count
+    p_start_date DATE    DEFAULT NULL,  -- filter: trip start date (inclusive, IST)
+    p_end_date   DATE    DEFAULT NULL   -- filter: trip end date (inclusive, IST)
 )
 RETURNS TABLE (
     id                       INT,
@@ -181,6 +184,10 @@ BEGIN
         )
         AND (p_state  IS NULL OR LOWER(dt.state) = LOWER(p_state))
         AND (p_status IS NULL OR dt.payment_status = p_status)
+        AND (p_start_date IS NULL OR
+             (TO_TIMESTAMP(dt.start_distance_timestamp / 1000.0) AT TIME ZONE 'Asia/Kolkata')::DATE >= p_start_date)
+        AND (p_end_date   IS NULL OR
+             (TO_TIMESTAMP(dt.start_distance_timestamp / 1000.0) AT TIME ZONE 'Asia/Kolkata')::DATE <= p_end_date)
     ORDER BY dt.id DESC
     LIMIT  p_page_size
     OFFSET (p_page - 1) * p_page_size;
