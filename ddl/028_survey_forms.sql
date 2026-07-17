@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS survey_classroom_equipment (
     vsat_modem              VARCHAR(20),
     vsat_modem_adaptor      VARCHAR(20),
     vsat_lan_cable          VARCHAR(20),
+    vsat_signal_strength    VARCHAR(20),
     vsat_final_status       VARCHAR(20),
     vsat_remarks            TEXT
 );
