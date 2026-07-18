@@ -1,18 +1,105 @@
 -- ============================================================================
 -- MASTER SCRIPT: PUSH ALL USER MANAGEMENT FUNCTIONS & FIX SCHEMA
+-- Last updated: 2026-07-18
+-- Changes: +Superuser role, +state table, +state module scope,
+--          +force_logout_at column, +referred_by/date_of_exit_comment columns
 -- ============================================================================
 
 SET search_path TO myactivity;
 
--- 1. FIX SCHEMA (Add missing columns if they don't exist)
-DO $$ 
-BEGIN 
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='myactivity' AND table_name='user_information' AND column_name='experience_status') THEN
-        ALTER TABLE user_information ADD COLUMN experience_status VARCHAR(100);
-    END IF;
+-- ============================================================================
+-- 1. FIX SCHEMA (idempotent — safe to run multiple times)
+-- ============================================================================
+
+-- user_information: experience_status column
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                 WHERE table_schema='myactivity' AND table_name='user_information'
+                   AND column_name='experience_status') THEN
+    ALTER TABLE user_information ADD COLUMN experience_status VARCHAR(100);
+  END IF;
 END $$;
 
--- 2. RE-DEFINE ALL FUNCTIONS
+-- user_information: referred_by column (DDL 009)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                 WHERE table_schema='myactivity' AND table_name='user_information'
+                   AND column_name='referred_by') THEN
+    ALTER TABLE user_information ADD COLUMN referred_by VARCHAR(200);
+  END IF;
+END $$;
+
+-- user_information: date_of_exit_comment column (DDL 009)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                 WHERE table_schema='myactivity' AND table_name='user_information'
+                   AND column_name='date_of_exit_comment') THEN
+    ALTER TABLE user_information ADD COLUMN date_of_exit_comment TEXT;
+  END IF;
+END $$;
+
+-- user_information: status_comment column
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                 WHERE table_schema='myactivity' AND table_name='user_information'
+                   AND column_name='status_comment') THEN
+    ALTER TABLE user_information ADD COLUMN status_comment TEXT;
+  END IF;
+END $$;
+
+-- user_tbl: force_logout_at column (DDL 035 — remote session termination by Superuser)
+ALTER TABLE user_tbl
+  ADD COLUMN IF NOT EXISTS force_logout_at TIMESTAMPTZ DEFAULT NULL;
+
+COMMENT ON COLUMN user_tbl.force_logout_at IS
+  'Set by Superuser to invalidate all tokens issued before this timestamp (remote force-logout)';
+
+-- ============================================================================
+-- 2. SUPERUSER ROLE (DDL 033)
+-- ============================================================================
+
+INSERT INTO roles (role_id, role_name, description) VALUES
+  (12, 'Superuser', 'Full access to all pages and all approval actions across the system')
+ON CONFLICT (role_name) DO UPDATE SET
+  description = EXCLUDED.description,
+  is_active   = 1;
+
+SELECT setval('roles_role_id_seq', GREATEST(12, (SELECT MAX(role_id) FROM roles)), true);
+
+-- ============================================================================
+-- 3. STATE TABLE + MODULE SETTINGS STATE SCOPE (DDL 034)
+-- ============================================================================
+
+-- State reference table
+CREATE TABLE IF NOT EXISTS state (
+  state_id   SERIAL       PRIMARY KEY,
+  state_name VARCHAR(100) NOT NULL UNIQUE,
+  is_active  SMALLINT     NOT NULL DEFAULT 1,
+  created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+
+-- Populate from existing district state_code values
+INSERT INTO state (state_name)
+SELECT DISTINCT state_code
+FROM district
+WHERE state_code IS NOT NULL AND TRIM(state_code) != ''
+ON CONFLICT (state_name) DO NOTHING;
+
+-- Extend module_settings to allow 'state' scope
+ALTER TABLE module_settings
+  DROP CONSTRAINT IF EXISTS module_settings_scope_type_check;
+
+ALTER TABLE module_settings
+  ADD CONSTRAINT module_settings_scope_type_check
+  CHECK (scope_type IN ('company', 'project', 'user', 'state'));
+
+-- ============================================================================
+-- 4. RE-DEFINE ALL FUNCTIONS
+-- ============================================================================
 
 -- fn_user_create
 CREATE OR REPLACE FUNCTION fn_user_create(p_emp_code VARCHAR, p_full_name VARCHAR, p_dob DATE, p_gender VARCHAR, p_mobile VARCHAR, p_email VARCHAR, p_nationality VARCHAR)
@@ -78,20 +165,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- fn_user_info_get_all
+-- fn_user_info_get_all (includes referred_by, date_of_exit_comment added in DDL 009)
 CREATE OR REPLACE FUNCTION fn_user_info_get_all()
 RETURNS TABLE(
   user_info_id INT, user_id INT, company_id INT, title VARCHAR,
   marital_status VARCHAR, photo_available BOOLEAN, photo_path VARCHAR, payroll_group VARCHAR, emergency_phone VARCHAR,
-  father_name VARCHAR, mother_name VARCHAR, spouse_name VARCHAR, aadhar_number VARCHAR, aadhar_document VARCHAR, 
+  father_name VARCHAR, mother_name VARCHAR, spouse_name VARCHAR, aadhar_number VARCHAR, aadhar_document VARCHAR,
   pan_number VARCHAR, pan_document VARCHAR,
   perm_address VARCHAR, perm_block VARCHAR, perm_district VARCHAR, perm_city VARCHAR, perm_state VARCHAR, perm_country VARCHAR, perm_pincode VARCHAR,
   curr_address VARCHAR, curr_block VARCHAR, curr_district VARCHAR, curr_city VARCHAR, curr_state VARCHAR, curr_country VARCHAR, curr_pincode VARCHAR,
   same_as_permanent BOOLEAN, bank_name VARCHAR, branch_name VARCHAR, account_number VARCHAR, ifsc_code VARCHAR, bank_document VARCHAR,
   reporting_rm VARCHAR, executive_name VARCHAR, district_of_posting VARCHAR, block_of_posting VARCHAR,
   experience_status VARCHAR, department VARCHAR, designation_id INT, date_of_joining DATE, date_of_exit DATE,
-  qualification VARCHAR, college_name VARCHAR, year_of_passout VARCHAR, total_experience VARCHAR, 
+  qualification VARCHAR, college_name VARCHAR, year_of_passout VARCHAR, total_experience VARCHAR,
   last_company_name VARCHAR, last_date_of_leaving DATE,
+  referred_by VARCHAR, date_of_exit_comment TEXT,
   is_active SMALLINT, created_at TIMESTAMPTZ, updated_at TIMESTAMPTZ,
   emp_code VARCHAR, full_name VARCHAR, date_of_birth DATE, gender VARCHAR, mobile_number VARCHAR, email VARCHAR, nationality VARCHAR,
   company_name VARCHAR, designation VARCHAR
@@ -109,6 +197,7 @@ BEGIN
     ui.experience_status, ui.department, ui.designation_id, ui.date_of_joining, ui.date_of_exit,
     ui.qualification, ui.college_name, ui.year_of_passout, ui.total_experience,
     ui.last_company_name, ui.last_date_of_leaving,
+    ui.referred_by, ui.date_of_exit_comment,
     ui.is_active, ui.created_at, ui.updated_at,
     u.emp_code, u.full_name, u.date_of_birth, u.gender, u.mobile_number, u.email, u.nationality,
     c.company_name, d.designation
