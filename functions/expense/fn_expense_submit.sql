@@ -23,7 +23,11 @@ CREATE OR REPLACE FUNCTION fn_expense_submit(
   p_payment_method       VARCHAR DEFAULT 'Cash', -- Cash | Online | UPI | Card
   p_receptionist_name    VARCHAR DEFAULT NULL,  -- Stay: receptionist name
   p_receptionist_phone   VARCHAR DEFAULT NULL,  -- Stay: receptionist phone
-  p_checkout_date        DATE    DEFAULT NULL   -- Stay: check-out date (date-range alternative to stay_days)
+  p_checkout_date        DATE    DEFAULT NULL,  -- Stay: check-out date (date-range alternative to stay_days)
+  p_driver_name          VARCHAR DEFAULT NULL,  -- Material Dispatch: driver name
+  p_driver_number        VARCHAR DEFAULT NULL,  -- Material Dispatch: driver phone number
+  p_vehicle_number       VARCHAR DEFAULT NULL,  -- Material Dispatch: vehicle registration number
+  p_docket_number        VARCHAR DEFAULT NULL   -- Courier: docket / tracking number
 )
 RETURNS TABLE(expense_id INT) AS $$
 BEGIN
@@ -33,7 +37,8 @@ BEGIN
     has_bill, amount, bill_date, remarks, bill_image_path,
     expense_date, state_type, food_sub_type,
     hotel_name, stay_location, stay_lat, stay_lng, stay_days,
-    payment_method, receptionist_name, receptionist_phone, checkout_date
+    payment_method, receptionist_name, receptionist_phone, checkout_date,
+    driver_name, driver_number, vehicle_number, docket_number
   )
   VALUES (
     p_user_id, p_company_id, p_project_id,
@@ -42,7 +47,8 @@ BEGIN
     COALESCE(p_amount, 0), p_bill_date, p_remarks, p_bill_image_path,
     p_expense_date, p_state_type, p_food_sub_type,
     p_hotel_name, p_stay_location, p_stay_lat, p_stay_lng, p_stay_days,
-    COALESCE(p_payment_method, 'Cash'), p_receptionist_name, p_receptionist_phone, p_checkout_date
+    COALESCE(p_payment_method, 'Cash'), p_receptionist_name, p_receptionist_phone, p_checkout_date,
+    p_driver_name, p_driver_number, p_vehicle_number, p_docket_number
   )
   RETURNING expense_tbl.expense_id;
 END;
