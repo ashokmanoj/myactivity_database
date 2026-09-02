@@ -1,5 +1,9 @@
 -- Function: fn_user_info_get_all  |  Domain: user_management
-CREATE OR REPLACE FUNCTION fn_user_info_get_all()
+-- p_include_inactive defaults to FALSE so existing callers (executive dropdowns,
+-- mappings, etc.) keep seeing active users only unless they explicitly opt in
+-- (the User Management screen passes TRUE so HR/superuser can find and reactivate
+-- deactivated accounts, which previously vanished from the list entirely).
+CREATE OR REPLACE FUNCTION fn_user_info_get_all(p_include_inactive BOOLEAN DEFAULT FALSE)
 RETURNS TABLE(
   user_info_id INT, user_id INT, company_id INT, title VARCHAR,
   marital_status VARCHAR, photo_available BOOLEAN, photo_path VARCHAR, payroll_group VARCHAR, emergency_phone VARCHAR,
@@ -38,7 +42,7 @@ BEGIN
   JOIN user_tbl u ON u.user_id = ui.user_id
   LEFT JOIN company c ON c.company_id = ui.company_id
   LEFT JOIN designation d ON d.designation_id = ui.designation_id
-  WHERE ui.is_active = 1
-  ORDER BY ui.created_at DESC;
+  WHERE (p_include_inactive OR ui.is_active = 1)
+  ORDER BY ui.is_active DESC, ui.created_at DESC;
 END;
 $$ LANGUAGE plpgsql;

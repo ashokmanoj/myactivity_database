@@ -1,19 +1,11 @@
 SET search_path TO myactivity;
 
-DROP FUNCTION IF EXISTS fn_distance_get_all(INT, INT, INT, INT, VARCHAR, VARCHAR, VARCHAR);
-DROP FUNCTION IF EXISTS fn_distance_get_all(INT, INT, INT, INT, VARCHAR, VARCHAR, VARCHAR, DATE, DATE);
-DROP FUNCTION IF EXISTS fn_distance_get_all(INT, INT, INT, INT, VARCHAR, VARCHAR);
-
-CREATE OR REPLACE FUNCTION fn_distance_get_all(
-    p_page       INT     DEFAULT 1,
-    p_page_size  INT     DEFAULT 10,
-    p_user_id    INT     DEFAULT NULL,
-    p_rm_user_id INT     DEFAULT NULL,
-    p_state      VARCHAR DEFAULT NULL,
-    p_status     VARCHAR DEFAULT NULL,
-    p_role       VARCHAR DEFAULT NULL,  -- current user's distance role for unread count
-    p_start_date DATE    DEFAULT NULL,  -- filter: trip start date (inclusive, IST)
-    p_end_date   DATE    DEFAULT NULL   -- filter: trip end date (inclusive, IST)
+-- Single-trip counterpart to fn_distance_get_all — same joins/columns, filtered to one id.
+-- Used to return the full trip after any mutation (sync/start/end/approve/submit/payment/
+-- forward/markRead/bulk actions) instead of the mutation's own minimal status row.
+CREATE OR REPLACE FUNCTION fn_distance_get_by_id(
+    p_id    INT,
+    p_role  VARCHAR DEFAULT NULL  -- current user's distance role for unread count
 )
 RETURNS TABLE (
     id                       INT,
@@ -24,7 +16,6 @@ RETURNS TABLE (
     vehicle_type             VARCHAR,
     state                    VARCHAR,
     district                 VARCHAR,
-    -- Image columns
     start_image_id           INT,
     start_image_name         VARCHAR,
     start_selfie_pic         VARCHAR,
@@ -34,7 +25,7 @@ RETURNS TABLE (
     start_distance_timestamp BIGINT,
     end_distance_timestamp   BIGINT,
     total_distance           INT,
-    gps_distance_km          NUMERIC,   -- haversine distance computed from GPS points
+    gps_distance_km          NUMERIC,
     rate_per_km              NUMERIC,
     required_amount          NUMERIC,
     verifier_amount          NUMERIC,
@@ -59,8 +50,7 @@ RETURNS TABLE (
     payment_at               TIMESTAMPTZ,
     uuid                     VARCHAR,
     unread_count             BIGINT,
-    legs                     JSON,
-    total_count              BIGINT
+    legs                     JSON
 )
 AS $$
 BEGIN
@@ -75,12 +65,10 @@ BEGIN
         dt.state,
         dt.district,
 
-        -- Start image
         dt.start_image_id,
         di_start.image_name                                             AS start_image_name,
         COALESCE(di_start.full_path, dt.start_selfie_pic)              AS start_selfie_pic,
 
-        -- End image
         dt.end_image_id,
         di_end.image_name                                               AS end_image_name,
         COALESCE(di_end.full_path, dt.end_selfie_pic)                  AS end_selfie_pic,
@@ -89,7 +77,6 @@ BEGIN
         dt.end_distance_timestamp,
         dt.total_distance,
 
-        -- GPS haversine distance (km) computed from stored GPS points
         ROUND(COALESCE((
             SELECT SUM(
                 6371.0 * 2.0 * ASIN(SQRT(
@@ -134,7 +121,6 @@ BEGIN
         dt.payment_at,
         dt.uuid,
 
-        -- Unread messages directed to this role
         COALESCE((
             SELECT COUNT(*)::BIGINT
             FROM distance_messages dm
@@ -147,13 +133,10 @@ BEGIN
             SELECT json_agg(dl ORDER BY dl.sort_order, dl.id)
             FROM distance_leg dl
             WHERE dl.trip_id = dt.id
-        ), '[]'::json)                                                  AS legs,
-
-        COUNT(*) OVER ()                                                AS total_count
+        ), '[]'::json)                                                  AS legs
 
     FROM distance_tracking dt
     LEFT JOIN user_tbl         u_exec   ON dt.user_id        = u_exec.user_id
-    -- RM: use stored rm_user_id first; then user_institution_map; then reporting_rm name match
     LEFT JOIN LATERAL (
         SELECT COALESCE(
             (SELECT uim.rm_user_id FROM user_institution_map uim
@@ -168,35 +151,6 @@ BEGIN
     LEFT JOIN user_tbl         u_rm     ON COALESCE(dt.rm_user_id, uim_rm.mapped_rm_id) = u_rm.user_id
     LEFT JOIN distance_images  di_start ON dt.start_image_id = di_start.id
     LEFT JOIN distance_images  di_end   ON dt.end_image_id   = di_end.id
-    WHERE
-        (p_user_id IS NULL OR dt.user_id = p_user_id)
-        AND (
-            p_rm_user_id IS NULL
-            OR dt.rm_user_id = p_rm_user_id
-            -- fallback 1: executive is mapped to this RM in user_institution_map
-            OR (dt.rm_user_id IS NULL AND EXISTS (
-                SELECT 1 FROM user_institution_map uim
-                WHERE uim.user_id    = dt.user_id
-                  AND uim.rm_user_id = p_rm_user_id
-                  AND uim.active     = 1
-            ))
-            -- fallback 2: executive's reporting_rm name matches this RM's full_name
-            OR (dt.rm_user_id IS NULL AND EXISTS (
-                SELECT 1 FROM user_tbl u
-                JOIN user_information ui ON ui.user_id = dt.user_id
-                WHERE u.user_id   = p_rm_user_id
-                  AND u.full_name = ui.reporting_rm
-                  AND u.is_active = 1
-            ))
-        )
-        AND (p_state  IS NULL OR LOWER(dt.state) = LOWER(p_state))
-        AND (p_status IS NULL OR dt.payment_status = p_status)
-        AND (p_start_date IS NULL OR
-             (TO_TIMESTAMP(dt.start_distance_timestamp / 1000.0) AT TIME ZONE 'Asia/Kolkata')::DATE >= p_start_date)
-        AND (p_end_date   IS NULL OR
-             (TO_TIMESTAMP(dt.start_distance_timestamp / 1000.0) AT TIME ZONE 'Asia/Kolkata')::DATE <= p_end_date)
-    ORDER BY dt.id DESC
-    LIMIT  p_page_size
-    OFFSET (p_page - 1) * p_page_size;
+    WHERE dt.id = p_id;
 END;
 $$ LANGUAGE plpgsql;

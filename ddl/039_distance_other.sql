@@ -55,5 +55,6 @@ CREATE TABLE IF NOT EXISTS distance_other_leg (
 );
 
 CREATE INDEX IF NOT EXISTS idx_dot_user_id   ON distance_other_trip(user_id);
-CREATE INDEX IF NOT EXISTS idx_dot_trip_date ON distance_other_trip(trip_date);
+-- idx_dot_trip_date removed — the trip_date column was dropped in
+-- 053_distance_other_trip_cleanup.sql (superseded by start_timestamp).
 CREATE INDEX IF NOT EXISTS idx_dol_trip_id   ON distance_other_leg(trip_id);

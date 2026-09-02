@@ -83,7 +83,11 @@ BEGIN
     END
   FROM recalc r
   WHERE dt.id                      = r.trip_id
-    AND dt.end_distance_timestamp  IS NOT NULL;  -- only ended trips need correcting
+    AND dt.end_distance_timestamp  IS NOT NULL   -- only ended trips need correcting
+    AND dt.vehicle_type IS DISTINCT FROM 'Others'; -- Others' amount is the sum of leg
+                                                    -- amounts (see distance.controller.js
+                                                    -- endTrip), not a distance-based fare —
+                                                    -- never let a GPS sync clobber it.
 
   RETURN QUERY SELECT v_count;
 END;

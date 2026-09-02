@@ -26,9 +26,8 @@ BEGIN
     END IF;
 
     v_rate := CASE
-        WHEN LOWER(p_state) = 'assam'   THEN 3.00
-        WHEN LOWER(p_state) = 'tripura' THEN 3.50
-        ELSE 3.00
+        WHEN LOWER(p_state) = 'odisha' THEN 4.00
+        ELSE 3.75
     END;
 
     -- Auto-lookup RM: 1st try user_institution_map, 2nd try reporting_rm name match

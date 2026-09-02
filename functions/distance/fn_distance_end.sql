@@ -25,16 +25,16 @@ BEGIN
     SELECT rate_per_km INTO v_rate FROM distance_tracking WHERE id = v_id;
     v_amount := COALESCE(p_total_distance, 0) * COALESCE(v_rate, 3.00);
 
-    UPDATE distance_tracking SET
-        end_odo_reading        = COALESCE(NULLIF(p_end_odo_reading, 0),      end_odo_reading),
-        end_selfie_pic         = COALESCE(NULLIF(p_end_selfie_pic, ''),      end_selfie_pic),
-        end_distance_timestamp = COALESCE(NULLIF(p_end_distance_timestamp,0),end_distance_timestamp),
-        total_distance         = COALESCE(NULLIF(p_total_distance, 0),       total_distance),
-        total_time             = COALESCE(p_total_time,                      total_time),
+    UPDATE distance_tracking dt SET
+        end_odo_reading        = COALESCE(NULLIF(p_end_odo_reading, 0),      dt.end_odo_reading),
+        end_selfie_pic         = COALESCE(NULLIF(p_end_selfie_pic, ''),      dt.end_selfie_pic),
+        end_distance_timestamp = COALESCE(NULLIF(p_end_distance_timestamp,0),dt.end_distance_timestamp),
+        total_distance         = COALESCE(NULLIF(p_total_distance, 0),       dt.total_distance),
+        total_time             = COALESCE(p_total_time,                      dt.total_time),
         required_amount        = v_amount,
         approved_amount        = v_amount,
         updated_at             = NOW()
-    WHERE id = v_id;
+    WHERE dt.id = v_id;
 
     RETURN QUERY SELECT v_id, p_total_distance, v_amount, 'UPDATED'::TEXT;
 END;
