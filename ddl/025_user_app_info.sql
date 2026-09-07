@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS user_app_info (
     user_id      INT NOT NULL,
     company_id   INT NOT NULL,
     platform     VARCHAR(20)  DEFAULT NULL,   -- 'android' | 'ios'
-    app_version  VARCHAR(20)  DEFAULT NULL,   -- e.g. '1.0.0'
+    app_version  INT NOT NULL DEFAULT 0,   -- e.g. 100, 120
     device_id    VARCHAR(255) DEFAULT NULL,
     os_version   VARCHAR(50)  DEFAULT NULL,           -- e.g. 'Android 14', 'iOS 17.4'
     last_seen_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),

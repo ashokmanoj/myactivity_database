@@ -19,11 +19,13 @@ RETURNS TABLE (
     id                       INT,
     user_id                  INT,
     executive_name           VARCHAR,
+    executive_designation    VARCHAR,
     rm_user_id               INT,
     rm_name                  VARCHAR,
     vehicle_type             VARCHAR,
     state                    VARCHAR,
     district                 VARCHAR,
+    schools_visited_count    BIGINT,
     -- Image columns
     start_image_id           INT,
     start_image_name         VARCHAR,
@@ -69,11 +71,23 @@ BEGIN
         dt.id,
         dt.user_id,
         u_exec.full_name                                                AS executive_name,
+        d_exec.designation                                              AS executive_designation,
         dt.rm_user_id,
         u_rm.full_name                                                  AS rm_name,
         dt.vehicle_type,
         dt.state,
         dt.district,
+
+        -- Distinct schools (institutions) this executive visited on the trip's start date
+        COALESCE((
+            SELECT COUNT(DISTINCT loc.institution_id)
+            FROM locations loc
+            WHERE loc.user_id       = dt.user_id
+              AND loc.institution_id IS NOT NULL
+              AND loc.is_active     = 1
+              AND (loc.created_at AT TIME ZONE 'Asia/Kolkata')::DATE =
+                  (TO_TIMESTAMP(dt.start_distance_timestamp / 1000.0) AT TIME ZONE 'Asia/Kolkata')::DATE
+        ), 0)::BIGINT                                                   AS schools_visited_count,
 
         -- Start image
         dt.start_image_id,
@@ -153,6 +167,8 @@ BEGIN
 
     FROM distance_tracking dt
     LEFT JOIN user_tbl         u_exec   ON dt.user_id        = u_exec.user_id
+    LEFT JOIN user_information ui_exec ON ui_exec.user_id   = dt.user_id
+    LEFT JOIN designation      d_exec   ON d_exec.designation_id = ui_exec.designation_id
     -- RM: use stored rm_user_id first; then user_institution_map; then reporting_rm name match
     LEFT JOIN LATERAL (
         SELECT COALESCE(

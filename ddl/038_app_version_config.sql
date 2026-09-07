@@ -13,9 +13,4 @@ CREATE TABLE IF NOT EXISTS app_version_config (
   CONSTRAINT app_version_config_platform_unique UNIQUE(platform)
 );
 
--- Seed one row per platform
-INSERT INTO app_version_config (platform, min_version, latest_version)
-VALUES
-  ('android', '1.0.0', '1.0.0'),
-  ('ios',     '1.0.0', '1.0.0')
-ON CONFLICT (platform) DO NOTHING;
+
