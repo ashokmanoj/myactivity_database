@@ -17,13 +17,6 @@ CREATE TABLE IF NOT EXISTS distance_state_rate (
 -- creation's State dropdown, Distance's rate logic) at their prior effective
 -- rate — Assam/Tripura/Odisha from fn_distance_sync's CASE, the rest at the
 -- 3.00 default both old CASE statements ultimately fell back to.
-INSERT INTO distance_state_rate (state, rate_per_km) VALUES
-    ('Karnataka',    3.00),
-    ('Assam',        3.00),
-    ('Uttarakhand',  3.00),
-    ('Tripura',      3.50),
-    ('Mizoram',      3.00),
-    ('Odisha',       4.00)
-ON CONFLICT (state) DO NOTHING;
+
 
 INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','061_distance_state_rate.sql') ON CONFLICT DO NOTHING;
