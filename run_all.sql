@@ -121,7 +121,6 @@
 
 -- ── Step 3c: Distance functions ──────────────────────────────────────────────
 \i 'functions/distance/fn_distance_start.sql'
-\i 'functions/distance/fn_distance_end.sql'
 \i 'functions/distance/fn_gps_create.sql'
 \i 'functions/distance/fn_gps_bulk_create.sql'
 \i 'functions/distance/fn_gps_get_by_trip.sql'

@@ -25,10 +25,12 @@ BEGIN
         END IF;
     END IF;
 
-    v_rate := CASE
-        WHEN LOWER(p_state) = 'odisha' THEN 4.00
-        ELSE 3.75
-    END;
+    -- Rate is looked up from the admin-editable distance_state_rate table
+    -- (Superuser/TA Team manage it) — 3.00 if the state has no configured rate.
+    SELECT rate_per_km INTO v_rate
+    FROM distance_state_rate
+    WHERE LOWER(state) = LOWER(p_state) AND is_active = 1;
+    v_rate := COALESCE(v_rate, 3.00);
 
     -- Auto-lookup RM: 1st try user_institution_map, 2nd try reporting_rm name match
     IF p_rm_user_id IS NULL THEN

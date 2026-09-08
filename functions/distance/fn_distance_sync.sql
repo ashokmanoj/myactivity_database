@@ -55,11 +55,12 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    v_rate := CASE
-        WHEN LOWER(COALESCE(v_state, '')) = 'assam'   THEN 3.00
-        WHEN LOWER(COALESCE(v_state, '')) = 'tripura' THEN 3.50
-        ELSE 3.00
-    END;
+    -- Rate is looked up from the admin-editable distance_state_rate table
+    -- (Superuser/TA Team manage it) — 3.00 if the state has no configured rate.
+    SELECT rate_per_km INTO v_rate
+    FROM distance_state_rate
+    WHERE LOWER(state) = LOWER(v_state) AND is_active = 1;
+    v_rate := COALESCE(v_rate, 3.00);
 
     -- Check UUID idempotency
     IF p_uuid IS NOT NULL THEN
