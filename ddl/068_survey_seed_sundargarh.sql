@@ -53,6 +53,8 @@ BEGIN
 ('NUM_DC',          'Contact Persons', NULL, NULL, 'Number of Smart Class rooms', 'number', NULL, 150),
 
 -- Student details (fixed classes 6-10, Section A/B)
+('LOWEST_CLASS',  'Student Details', NULL, NULL, 'Lowest class available in school', 'number', NULL, 151),
+('HIGHEST_CLASS', 'Student Details', NULL, NULL, 'Highest class available in school', 'number', NULL, 152),
 ('STU_6_A',  'Student Details', NULL, NULL, 'Class 6 — Section A student count', 'number', NULL, 160),
 ('STU_6_B',  'Student Details', NULL, NULL, 'Class 6 — Section B student count', 'number', NULL, 170),
 ('STU_7_A',  'Student Details', NULL, NULL, 'Class 7 — Section A student count', 'number', NULL, 180),

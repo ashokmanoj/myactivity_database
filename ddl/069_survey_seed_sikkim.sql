@@ -53,6 +53,8 @@ BEGIN
 ('ICT_EMAIL',   'B. Contact Persons', 'ICT / Computer Teacher', NULL, 'Email id', 'text', NULL, 180),
 
 -- C. Student details (fixed classes 6-12, two mediums)
+('LOWEST_CLASS',  'C. Student Details', NULL, NULL, 'Lowest class available in school', 'number', NULL, 181),
+('HIGHEST_CLASS', 'C. Student Details', NULL, NULL, 'Highest class available in school', 'number', NULL, 182),
 ('STU_6_M1',  'C. Student Details', NULL, NULL, 'Class 6 — Students count (Medium 1)', 'number', NULL, 190),
 ('STU_6_M2',  'C. Student Details', NULL, NULL, 'Class 6 — Students count (Medium 2)', 'number', NULL, 200),
 ('STU_7_M1',  'C. Student Details', NULL, NULL, 'Class 7 — Students count (Medium 1)', 'number', NULL, 210),
