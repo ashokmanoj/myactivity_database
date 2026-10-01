@@ -17,6 +17,15 @@ RETURNS TABLE(
   payment_method   VARCHAR,
   remarks          TEXT,
   bill_image_path  VARCHAR,
+  images           JSON,
+  state_type       VARCHAR,
+  district_type    VARCHAR,
+  food_sub_type    VARCHAR,
+  driver_name      VARCHAR,
+  driver_number    VARCHAR,
+  vehicle_number   VARCHAR,
+  docket_number    VARCHAR,
+  mode_of_dispatch VARCHAR,
   verifier_status  VARCHAR, verifier_amount NUMERIC, verifier_comment TEXT, verifier_at TIMESTAMPTZ,
   rm_status        VARCHAR, rm_amount       NUMERIC, rm_comment       TEXT, rm_at       TIMESTAMPTZ,
   ta_status        VARCHAR, ta_amount       NUMERIC, ta_comment       TEXT, ta_at       TIMESTAMPTZ,
@@ -39,6 +48,20 @@ BEGIN
     TO_CHAR(e.expense_date, 'YYYY-MM-DD'),
     e.payment_method::VARCHAR,
     e.remarks, e.bill_image_path::VARCHAR,
+    COALESCE(
+      (SELECT json_agg(json_build_object(
+          'image_path',     img.image_path,
+          'image_type',     img.image_type,
+          'photo_lat',      img.photo_lat,
+          'photo_lng',      img.photo_lng,
+          'photo_location', img.photo_location
+        ) ORDER BY img.sort_order)
+       FROM myactivity.expense_images img WHERE img.expense_id = e.expense_id),
+      '[]'::json
+    ),
+    e.state_type::VARCHAR, e.district_type::VARCHAR, e.food_sub_type::VARCHAR,
+    e.driver_name::VARCHAR, e.driver_number::VARCHAR, e.vehicle_number::VARCHAR,
+    e.docket_number::VARCHAR, e.mode_of_dispatch::VARCHAR,
     e.verifier_status::VARCHAR, e.verifier_amount, e.verifier_comment, e.verifier_at,
     e.rm_status::VARCHAR,       e.rm_amount,       e.rm_comment,       e.rm_at,
     e.ta_status::VARCHAR,       e.ta_amount,       e.ta_comment,       e.ta_at,

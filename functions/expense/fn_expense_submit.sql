@@ -27,7 +27,9 @@ CREATE OR REPLACE FUNCTION fn_expense_submit(
   p_driver_name          VARCHAR DEFAULT NULL,  -- Material Dispatch: driver name
   p_driver_number        VARCHAR DEFAULT NULL,  -- Material Dispatch: driver phone number
   p_vehicle_number       VARCHAR DEFAULT NULL,  -- Material Dispatch: vehicle registration number
-  p_docket_number        VARCHAR DEFAULT NULL   -- Courier: docket / tracking number
+  p_docket_number        VARCHAR DEFAULT NULL,  -- Courier: docket / tracking number
+  p_district_type        VARCHAR DEFAULT NULL,  -- Food: 'Inside District' | 'Outside District'
+  p_mode_of_dispatch     VARCHAR DEFAULT NULL   -- Faulty Item Sent To Store: 'Courier' | 'Local Transport'
 )
 RETURNS TABLE(expense_id INT) AS $$
 BEGIN
@@ -38,7 +40,8 @@ BEGIN
     expense_date, state_type, food_sub_type,
     hotel_name, stay_location, stay_lat, stay_lng, stay_days,
     payment_method, receptionist_name, receptionist_phone, checkout_date,
-    driver_name, driver_number, vehicle_number, docket_number
+    driver_name, driver_number, vehicle_number, docket_number,
+    district_type, mode_of_dispatch
   )
   VALUES (
     p_user_id, p_company_id, p_project_id,
@@ -48,7 +51,8 @@ BEGIN
     p_expense_date, p_state_type, p_food_sub_type,
     p_hotel_name, p_stay_location, p_stay_lat, p_stay_lng, p_stay_days,
     COALESCE(p_payment_method, 'Cash'), p_receptionist_name, p_receptionist_phone, p_checkout_date,
-    p_driver_name, p_driver_number, p_vehicle_number, p_docket_number
+    p_driver_name, p_driver_number, p_vehicle_number, p_docket_number,
+    p_district_type, p_mode_of_dispatch
   )
   RETURNING expense_tbl.expense_id;
 END;
