@@ -11,7 +11,5 @@ CREATE TABLE IF NOT EXISTS department (
     updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Seed some departments
-INSERT INTO department (department_name) VALUES 
-('HR'), ('Finance'), ('IT'), ('Operations'), ('Sales'), ('Marketing')
-ON CONFLICT (department_name) DO NOTHING;
+-- Starter department rows moved to database/seed/008_department_and_seeds.sql
+-- — DDL files are schema-only now (see database/seed/README.md).

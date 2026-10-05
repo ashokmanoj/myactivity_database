@@ -14,7 +14,3 @@ CREATE TABLE IF NOT EXISTS tech_exec_institution_map (
 CREATE INDEX IF NOT EXISTS idx_te_map_user      ON tech_exec_institution_map(user_id);
 CREATE INDEX IF NOT EXISTS idx_te_map_institute ON tech_exec_institution_map(institute_id);
 CREATE INDEX IF NOT EXISTS idx_te_map_active    ON tech_exec_institution_map(is_active);
-
-INSERT INTO schema_versions(version, migration_file)
-VALUES ('v1.0.18', '018_tech_exec_mapping.sql')
-ON CONFLICT DO NOTHING;

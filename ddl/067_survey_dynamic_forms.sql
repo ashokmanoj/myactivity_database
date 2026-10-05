@@ -62,5 +62,3 @@ CREATE TABLE IF NOT EXISTS survey_answer (
 );
 CREATE INDEX IF NOT EXISTS idx_survey_answer_submission ON survey_answer(submission_id);
 CREATE INDEX IF NOT EXISTS idx_survey_answer_question   ON survey_answer(question_id);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','067_survey_dynamic_forms.sql') ON CONFLICT DO NOTHING;

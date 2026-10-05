@@ -10,7 +10,3 @@ ALTER TABLE user_app_info
 UPDATE user_app_info
 SET    last_installed_at = created_at
 WHERE  last_installed_at IS NULL;
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.28', '028_user_app_info_add_last_installed.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

@@ -11,11 +11,5 @@ CREATE TABLE IF NOT EXISTS power_meter_category (
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO power_meter_category (category_name, sort_order) VALUES
-    ('Working',     1),
-    ('Not Working', 2)
-ON CONFLICT (category_name) DO NOTHING;
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.20', '020_power_meter_category.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;
+-- Starter category rows moved to database/seed/020_power_meter_category.sql
+-- — DDL files are schema-only now (see database/seed/README.md).

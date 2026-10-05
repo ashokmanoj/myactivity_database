@@ -12,4 +12,3 @@ CREATE TABLE IF NOT EXISTS expense_purpose_tbl (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_expense_purpose_name
   ON expense_purpose_tbl(LOWER(name), COALESCE(company_id, 0));
-

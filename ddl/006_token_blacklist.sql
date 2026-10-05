@@ -12,5 +12,3 @@ CREATE TABLE IF NOT EXISTS token_blacklist (
 );
 CREATE INDEX IF NOT EXISTS idx_blacklist_token ON token_blacklist(token);
 CREATE INDEX IF NOT EXISTS idx_blacklist_expires ON token_blacklist(expires_at);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','006_token_blacklist.sql') ON CONFLICT DO NOTHING;

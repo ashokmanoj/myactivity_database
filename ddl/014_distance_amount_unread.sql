@@ -11,7 +11,3 @@ ALTER TABLE distance_tracking
 -- Track whether a forwarded message has been read by the recipient role
 ALTER TABLE distance_messages
   ADD COLUMN IF NOT EXISTS is_read SMALLINT NOT NULL DEFAULT 0;
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.14', '014_distance_amount_unread.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

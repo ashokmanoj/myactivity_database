@@ -5,5 +5,3 @@ SET search_path TO myactivity;
 
 ALTER TABLE project
   ADD COLUMN IF NOT EXISTS state VARCHAR(100);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','063_project_state.sql') ON CONFLICT DO NOTHING;

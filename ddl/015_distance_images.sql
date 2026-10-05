@@ -21,7 +21,3 @@ ALTER TABLE distance_tracking
 
 CREATE INDEX IF NOT EXISTS idx_dt_start_image ON distance_tracking(start_image_id);
 CREATE INDEX IF NOT EXISTS idx_dt_end_image   ON distance_tracking(end_image_id);
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.15', '015_distance_images.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

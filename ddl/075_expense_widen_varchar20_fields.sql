@@ -11,5 +11,3 @@ SET search_path TO myactivity;
 
 ALTER TABLE expense_tbl ALTER COLUMN state_type      TYPE VARCHAR(50);
 ALTER TABLE expense_tbl ALTER COLUMN payment_method  TYPE VARCHAR(50);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','075_expense_widen_varchar20_fields.sql') ON CONFLICT DO NOTHING;

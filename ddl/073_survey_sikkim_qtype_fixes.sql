@@ -34,5 +34,3 @@ BEGIN
       updated_at = NOW()
   WHERE project_id = v_project_id AND q_id IN ('CABLE_ROUTE', 'VOLTAGE', 'FREQUENCY');
 END $$;
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','073_survey_sikkim_qtype_fixes.sql') ON CONFLICT DO NOTHING;

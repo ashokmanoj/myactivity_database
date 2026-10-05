@@ -10,5 +10,3 @@
 SET search_path TO myactivity;
 
 DROP FUNCTION IF EXISTS fn_distance_end(INT, INT, VARCHAR, BIGINT, INT, INT, VARCHAR);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','062_drop_dead_fn_distance_end.sql') ON CONFLICT DO NOTHING;

@@ -34,5 +34,3 @@ BEGIN
     CREATE UNIQUE INDEX uq_distance_images_name ON distance_images(image_name);
   END IF;
 END $$;
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','074_distance_images_dedupe.sql') ON CONFLICT DO NOTHING;

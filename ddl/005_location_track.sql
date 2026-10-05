@@ -32,4 +32,4 @@ CREATE TABLE IF NOT EXISTS location_photos (
 );
 CREATE INDEX IF NOT EXISTS idx_loc_photos_loc ON location_photos(location_id);
 
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','005_location_track.sql') ON CONFLICT DO NOTHING;
+

@@ -11,7 +11,3 @@ ALTER TABLE power_meter
 COMMENT ON COLUMN power_meter.entry_type          IS 'POWER_METER or RECEIPT';
 COMMENT ON COLUMN power_meter.meter_reading       IS 'Reading shown on the meter (Power Meter type only)';
 COMMENT ON COLUMN power_meter.receipt_duration_id IS 'FK to power_meter_receipt_duration (Receipt type only)';
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.22', '022_power_meter_add_columns.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

@@ -6,5 +6,3 @@ SET search_path TO myactivity;
 
 ALTER TABLE user_information
   ALTER COLUMN district_of_posting TYPE VARCHAR(1000);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','064_multi_district_posting.sql') ON CONFLICT DO NOTHING;

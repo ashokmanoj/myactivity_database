@@ -53,4 +53,4 @@ CREATE TABLE IF NOT EXISTS institution_project_map (
     CONSTRAINT uq_inst_proj_map UNIQUE (project_id, institute_id)
 );
 
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','003_location_tables.sql') ON CONFLICT DO NOTHING;
+

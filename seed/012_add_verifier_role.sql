@@ -1,6 +1,6 @@
--- ============================================================================
--- DDL 012: Add Verifier role
--- ============================================================================
+-- Seed data that used to live in ddl/012_add_verifier_role.sql (that file had
+-- no schema in it at all — just this role row — so it's archived rather than
+-- kept as an empty husk; see database/ddl/archive/README.md).
 SET search_path TO myactivity;
 
 INSERT INTO roles (role_id, role_name, description) VALUES
@@ -11,7 +11,3 @@ ON CONFLICT (role_name) DO UPDATE SET
 
 -- Advance sequence past the new max
 SELECT setval('roles_role_id_seq', 11, true);
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.12', '012_add_verifier_role.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

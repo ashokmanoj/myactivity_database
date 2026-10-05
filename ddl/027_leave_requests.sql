@@ -22,7 +22,3 @@ CREATE INDEX IF NOT EXISTS idx_leave_user_id    ON leave_requests (user_id);
 CREATE INDEX IF NOT EXISTS idx_leave_company_id ON leave_requests (company_id);
 CREATE INDEX IF NOT EXISTS idx_leave_date       ON leave_requests (leave_date);
 CREATE INDEX IF NOT EXISTS idx_leave_status     ON leave_requests (status);
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.27', '027_leave_requests.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

@@ -11,7 +11,3 @@ ON CONFLICT (role_name) DO UPDATE SET
 
 -- Advance sequence past the new max
 SELECT setval('roles_role_id_seq', 12, true);
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.33', '033_add_superuser_role.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

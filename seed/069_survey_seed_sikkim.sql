@@ -135,5 +135,3 @@ BEGIN
 
   DROP TABLE tmp_survey_seed_069;
 END $$;
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','069_survey_seed_sikkim.sql') ON CONFLICT DO NOTHING;

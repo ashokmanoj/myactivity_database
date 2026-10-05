@@ -18,7 +18,3 @@ CREATE TABLE IF NOT EXISTS user_app_info (
 
 CREATE INDEX IF NOT EXISTS idx_user_app_info_company ON user_app_info (company_id);
 CREATE INDEX IF NOT EXISTS idx_user_app_info_last_seen ON user_app_info (last_seen_at DESC);
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.25', '025_user_app_info.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

@@ -8,5 +8,3 @@ SET search_path TO myactivity;
 
 ALTER TABLE expense_tbl
   ADD COLUMN IF NOT EXISTS district_type VARCHAR(50);  -- 'Inside District' | 'Outside District'
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','076_expense_district_type.sql') ON CONFLICT DO NOTHING;

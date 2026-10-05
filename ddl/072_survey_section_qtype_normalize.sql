@@ -12,14 +12,9 @@ CREATE TABLE IF NOT EXISTS survey_question_type (
     sort_order INT         NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-INSERT INTO survey_question_type (type_name, sort_order) VALUES
-    ('text',    1),
-    ('number',  2),
-    ('boolean', 3),
-    ('select',  4),
-    ('photo',   5),
-    ('decimal',    6)
-ON CONFLICT (type_name) DO NOTHING;
+-- The 6 fixed type rows moved to
+-- database/seed/072_survey_section_qtype_normalize.sql — DDL files are
+-- schema-only now (see database/seed/README.md).
 
 -- Sections are per-project (each project's paper form has its own headings).
 CREATE TABLE IF NOT EXISTS survey_section (
@@ -73,5 +68,3 @@ ALTER TABLE survey_question ALTER COLUMN q_type_id SET NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_survey_question_section ON survey_question(section_id);
 CREATE INDEX IF NOT EXISTS idx_survey_question_qtype   ON survey_question(q_type_id);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','072_survey_section_qtype_normalize.sql') ON CONFLICT DO NOTHING;

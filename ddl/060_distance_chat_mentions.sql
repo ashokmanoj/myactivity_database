@@ -7,5 +7,3 @@ ALTER TABLE distance_messages
   ADD COLUMN IF NOT EXISTS mentioned_user_id INT REFERENCES user_tbl(user_id) ON DELETE SET NULL;
 
 CREATE INDEX IF NOT EXISTS idx_dm_mentioned_user ON distance_messages(mentioned_user_id);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','060_distance_chat_mentions.sql') ON CONFLICT DO NOTHING;

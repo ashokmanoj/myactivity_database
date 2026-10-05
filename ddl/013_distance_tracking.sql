@@ -107,6 +107,3 @@ CREATE TABLE IF NOT EXISTS distance_messages (
 CREATE INDEX IF NOT EXISTS idx_dm_trip_id ON distance_messages(trip_id);
 
 -- ── Schema version ───────────────────────────────────────────────────────────
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.13', '013_distance_tracking.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

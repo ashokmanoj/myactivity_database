@@ -26,5 +26,3 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_file_blob_category_filename
 -- and allow substring() to read just the requested byte range efficiently
 -- (used for chunked/Range responses instead of loading a whole blob at once).
 ALTER TABLE file_blob ALTER COLUMN data SET STORAGE EXTERNAL;
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','078_file_blob.sql') ON CONFLICT DO NOTHING;

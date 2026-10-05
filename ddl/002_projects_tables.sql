@@ -39,5 +39,3 @@ CREATE TABLE IF NOT EXISTS company (
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_company_active ON company(is_active);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','002_projects_tables.sql') ON CONFLICT DO NOTHING;

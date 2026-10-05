@@ -98,22 +98,8 @@ CREATE TABLE IF NOT EXISTS user_information (
 CREATE INDEX IF NOT EXISTS idx_user_mobile ON user_tbl(mobile_number);
 CREATE INDEX IF NOT EXISTS idx_user_info_company ON user_information(company_id);
 
--- 4. Dummy Data (2 Users)
-INSERT INTO user_tbl (emp_code, full_name, date_of_birth, gender, mobile_number, email, nationality)
-VALUES 
-('EMP101', 'John Doe', '1990-05-15', 'Male', '9876543210', 'john.doe@example.com', 'Indian'),
-('EMP102', 'Jane Smith', '1992-08-20', 'Female', '9876543211', 'jane.smith@example.com', 'Indian')
-ON CONFLICT (emp_code) DO NOTHING;
+-- Dummy test users moved to database/seed/004_user_tables_seed.sql — DDL
+-- files are schema-only now (see database/seed/README.md).
 
-INSERT INTO user_information (user_id, title, aadhar_number, aadhar_document, pan_number, pan_document, qualification, total_experience)
-VALUES 
-(1, 'Mr', '123456789012', '/uploads/docs/john_aadhar.pdf', 'ABCDE1234F', '/uploads/docs/john_pan.jpg', 'Bachelor''s Degree (UG)', '5 years'),
-(2, 'Ms', '987654321098', '/uploads/docs/jane_aadhar.pdf', 'XYZW9876G', '/uploads/docs/jane_pan.jpg', 'MBA', 'Fresher (0 years)')
-ON CONFLICT (user_id) DO NOTHING;
-
--- 5. Migration Tracking (Forcing version v1.0.0)
-DELETE FROM schema_versions WHERE version = 'v1.0.0'; -- Clear old duplicates if any
-INSERT INTO schema_versions (version, migration_file) 
-VALUES ('v1.0.0', '004_full_user_rebuild.sql');
 -- Patch: add last_login_at if missing (safe for existing databases)
 ALTER TABLE user_information ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;

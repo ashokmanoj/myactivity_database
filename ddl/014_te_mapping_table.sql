@@ -25,7 +25,3 @@ CREATE INDEX IF NOT EXISTS idx_uim_inst      ON user_institution_map(institution
 CREATE INDEX IF NOT EXISTS idx_uim_user      ON user_institution_map(user_id);
 CREATE INDEX IF NOT EXISTS idx_uim_rm        ON user_institution_map(rm_user_id);
 CREATE INDEX IF NOT EXISTS idx_uim_active    ON user_institution_map(active);
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.14', '014_te_mapping_table.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

@@ -8,5 +8,3 @@ SET search_path TO myactivity;
 ALTER TABLE user_information
   ADD COLUMN IF NOT EXISTS project_id INT REFERENCES project(project_id) ON DELETE SET NULL,
   ADD COLUMN IF NOT EXISTS state_of_posting VARCHAR(100);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','059_mobile_access_user.sql') ON CONFLICT DO NOTHING;

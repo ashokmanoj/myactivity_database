@@ -68,6 +68,3 @@ CREATE INDEX IF NOT EXISTS idx_pma_question_id ON pm_answer(question_id);
 -- ---------------------------------------------------------------------------
 -- Schema version record
 -- ---------------------------------------------------------------------------
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.15', '015_pm_tables.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;

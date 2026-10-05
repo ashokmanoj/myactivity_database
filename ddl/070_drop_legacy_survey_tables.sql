@@ -11,5 +11,3 @@ DROP TABLE IF EXISTS survey_teacher_counts;
 DROP TABLE IF EXISTS survey_student_sections;
 DROP TABLE IF EXISTS survey_student_details;
 DROP TABLE IF EXISTS survey_submissions;
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','070_drop_legacy_survey_tables.sql') ON CONFLICT DO NOTHING;

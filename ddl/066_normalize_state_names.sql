@@ -48,5 +48,3 @@ WHERE s.is_active = 1
     SELECT 1 FROM distance_state_rate r WHERE r.state = s.state_name
   )
 ON CONFLICT (state) DO NOTHING;
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','066_normalize_state_names.sql') ON CONFLICT DO NOTHING;

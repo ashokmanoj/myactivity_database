@@ -22,5 +22,3 @@ WHERE s.category_id = c.category_id
 ALTER TABLE survey_submission
   ADD COLUMN IF NOT EXISTS task_id INT REFERENCES task_list(task_id) ON DELETE SET NULL;
 CREATE INDEX IF NOT EXISTS idx_survey_submission_task ON survey_submission(task_id);
-
-INSERT INTO schema_versions(version, migration_file) VALUES('v1.0.0','071_survey_task_integration.sql') ON CONFLICT DO NOTHING;

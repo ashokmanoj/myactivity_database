@@ -25,7 +25,3 @@ CREATE INDEX IF NOT EXISTS idx_pwm_institution_id ON power_meter(institution_id)
 CREATE INDEX IF NOT EXISTS idx_pwm_user_id        ON power_meter(user_id);
 CREATE INDEX IF NOT EXISTS idx_pwm_status         ON power_meter(meter_status);
 CREATE INDEX IF NOT EXISTS idx_pwm_created_at     ON power_meter(created_at);
-
-INSERT INTO schema_versions (version, migration_file)
-VALUES ('v1.0.19', '019_power_meter_table.sql')
-ON CONFLICT (migration_file, direction) DO NOTHING;
