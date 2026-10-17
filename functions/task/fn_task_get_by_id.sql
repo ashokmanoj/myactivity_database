@@ -1,6 +1,6 @@
 -- Function: fn_task_get_by_id  |  Domain: task
 -- Single-task counterpart to fn_task_get_all — same joins, filtered to one task_id.
--- Used to return the full task after create instead of the bare task_list row.
+-- Used to return the full task after create instead of the bare assign_task_list row.
 SET search_path TO myactivity;
 
 CREATE OR REPLACE FUNCTION fn_task_get_by_id(p_task_id INT)
@@ -32,9 +32,7 @@ RETURNS TABLE(
     remarks              TEXT,
     status               VARCHAR,
     created_by           INT,
-    created_at           TIMESTAMPTZ,
-    gps_lat              DOUBLE PRECISION,
-    gps_lng              DOUBLE PRECISION
+    created_at           TIMESTAMPTZ
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -66,10 +64,8 @@ BEGIN
         t.remarks,
         t.status,
         t.created_by,
-        t.created_at,
-        t.gps_lat,
-        t.gps_lng
-    FROM task_list t
+        t.created_at
+    FROM assign_task_list t
     LEFT JOIN project           p ON p.project_id        = t.project_id
     LEFT JOIN task_category     c ON c.category_id       = t.category_id
     LEFT JOIN task_sub_category s ON s.sub_category_id   = t.sub_category_id

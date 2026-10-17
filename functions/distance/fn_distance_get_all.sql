@@ -92,12 +92,12 @@ BEGIN
         -- Start image
         dt.start_image_id,
         di_start.image_name                                             AS start_image_name,
-        COALESCE(di_start.full_path, dt.start_selfie_pic)              AS start_selfie_pic,
+        COALESCE(di_start.fullpath_url, dt.start_selfie_pic)              AS start_selfie_pic,
 
         -- End image
         dt.end_image_id,
         di_end.image_name                                               AS end_image_name,
-        COALESCE(di_end.full_path, dt.end_selfie_pic)                  AS end_selfie_pic,
+        COALESCE(di_end.fullpath_url, dt.end_selfie_pic)                  AS end_selfie_pic,
 
         dt.start_distance_timestamp,
         dt.end_distance_timestamp,

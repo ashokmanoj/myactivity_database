@@ -44,7 +44,8 @@ BEGIN
     e.amount, e.bill_date, e.remarks, e.bill_image_path,
     COALESCE(
       (SELECT json_agg(json_build_object(
-          'image_path',     img.image_path,
+          'image_path',     img.fullpath_url,
+          'image_name',     img.image_name,
           'image_type',     img.image_type,
           'photo_lat',      img.photo_lat,
           'photo_lng',      img.photo_lng,

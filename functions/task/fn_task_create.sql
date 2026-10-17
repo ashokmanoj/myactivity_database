@@ -16,29 +16,25 @@ CREATE OR REPLACE FUNCTION fn_task_create(
     p_interval_type   VARCHAR          DEFAULT NULL,
     p_interval_days   INT              DEFAULT NULL,
     p_remarks         TEXT             DEFAULT NULL,
-    p_created_by      INT              DEFAULT NULL,
-    p_gps_lat         DOUBLE PRECISION DEFAULT NULL,
-    p_gps_lng         DOUBLE PRECISION DEFAULT NULL
+    p_created_by      INT              DEFAULT NULL
 )
-RETURNS SETOF task_list AS $$
+RETURNS SETOF assign_task_list AS $$
 BEGIN
     RETURN QUERY
-    INSERT INTO task_list (
+    INSERT INTO assign_task_list (
         project_id, category_id, sub_category_id,
         designation, district, block,
         priority, executive_id, institution_id,
         start_date, end_date,
         interval_type, interval_days,
-        remarks, status, created_by,
-        gps_lat, gps_lng
+        remarks, status, created_by
     ) VALUES (
         p_project_id, p_category_id, p_sub_category_id,
         p_designation, p_district, p_block,
         p_priority, p_executive_id, p_institution_id,
         p_start_date, p_end_date,
         p_interval_type, p_interval_days,
-        p_remarks, 'Pending', p_created_by,
-        p_gps_lat, p_gps_lng
+        p_remarks, 'Pending', p_created_by
     )
     RETURNING *;
 END;

@@ -20,5 +20,5 @@ WHERE s.category_id = c.category_id
   AND s.is_survey = 0;
 
 ALTER TABLE survey_submission
-  ADD COLUMN IF NOT EXISTS task_id INT REFERENCES task_list(task_id) ON DELETE SET NULL;
+  ADD COLUMN IF NOT EXISTS task_id INT REFERENCES assign_task_list(task_id) ON DELETE SET NULL;
 CREATE INDEX IF NOT EXISTS idx_survey_submission_task ON survey_submission(task_id);

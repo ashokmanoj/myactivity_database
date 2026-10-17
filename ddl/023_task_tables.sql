@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS task_sub_category (
 );
 
 -- ── Task List ─────────────────────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS task_list (
+CREATE TABLE IF NOT EXISTS assign_task_list (
     task_id         SERIAL       PRIMARY KEY,
     project_id      INT,
     category_id     INT          REFERENCES task_category(category_id),
@@ -46,12 +46,12 @@ CREATE TABLE IF NOT EXISTS task_list (
     updated_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_task_category_id     ON task_list(category_id);
-CREATE INDEX IF NOT EXISTS idx_task_sub_category_id ON task_list(sub_category_id);
-CREATE INDEX IF NOT EXISTS idx_task_project_id      ON task_list(project_id);
-CREATE INDEX IF NOT EXISTS idx_task_executive_id    ON task_list(executive_id);
-CREATE INDEX IF NOT EXISTS idx_task_status          ON task_list(status);
-CREATE INDEX IF NOT EXISTS idx_task_created_at      ON task_list(created_at);
+CREATE INDEX IF NOT EXISTS idx_task_category_id     ON assign_task_list(category_id);
+CREATE INDEX IF NOT EXISTS idx_task_sub_category_id ON assign_task_list(sub_category_id);
+CREATE INDEX IF NOT EXISTS idx_task_project_id      ON assign_task_list(project_id);
+CREATE INDEX IF NOT EXISTS idx_task_executive_id    ON assign_task_list(executive_id);
+CREATE INDEX IF NOT EXISTS idx_task_status          ON assign_task_list(status);
+CREATE INDEX IF NOT EXISTS idx_task_created_at      ON assign_task_list(created_at);
 
 -- Category/sub-category seed rows moved to database/seed/023_task_tables.sql
 -- — DDL files are schema-only now (see database/seed/README.md).

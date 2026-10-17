@@ -9,6 +9,7 @@ reference.
 | `029_survey_changes.sql` | Follow-up changes to that fixed-shape system | `070_drop_legacy_survey_tables.sql` |
 | `032_survey_add_vsat_signal_strength.sql` | Added a column to that same old system | `070_drop_legacy_survey_tables.sql` |
 | `038_app_version_config.sql` | Created the APK upload/min-version force-update table — retired once the app shipped via the Play Store | `079_drop_app_version_config.sql` |
+| `024_task_add_gps.sql` | Added gps_lat/gps_lng to assign_task_list — unused, never set by any screen | `083_drop_task_gps.sql` |
 
 Do not add these back to `SQL_FILES` in `run-all-migrations.js` — the tables they create
 are immediately dropped again by the migration named above, which still runs.
