@@ -9,7 +9,9 @@ CREATE OR REPLACE FUNCTION fn_location_create(
   p_pincode      VARCHAR,
   p_desc         VARCHAR,
   p_inst_id      INT,
-  p_inst_name    VARCHAR DEFAULT NULL
+  p_inst_name    VARCHAR DEFAULT NULL,
+  p_project_id   INT     DEFAULT NULL,
+  p_project_name VARCHAR DEFAULT NULL
 )
 RETURNS SETOF locations AS $$
 BEGIN
@@ -17,13 +19,17 @@ BEGIN
   INSERT INTO locations (
     user_id, location_name, location_type,
     lat, lon, geo_address, geo_pincode, description,
-    institution_id, institution_name,
+    institution_id, institution_name, project_id, project_name,
     is_active, created_at, updated_at
   )
   VALUES (
     p_user_id, p_name, p_type,
     p_lat, p_lon, p_address, p_pincode, p_desc,
-    p_inst_id, p_inst_name,
+    p_inst_id,
+    -- names fall back to the master tables when mobile sends only the id
+    COALESCE(p_inst_name, (SELECT i.institution_name FROM institution i WHERE i.institute_id = p_inst_id)),
+    p_project_id,
+    COALESCE(p_project_name, (SELECT pr.project_name FROM project pr WHERE pr.project_id = p_project_id)),
     1, NOW(), NOW()
   )
   RETURNING *;

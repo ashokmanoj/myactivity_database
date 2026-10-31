@@ -26,12 +26,13 @@ as the migrations — safe to re-run).
 | `012_add_verifier_role.sql` | The `Verifier` role |
 | `020_power_meter_category.sql` | `Working` / `Not Working` categories |
 | `021_power_meter_receipt_duration.sql` | 6 fixed receipt-duration label rows |
-| `023_task_tables.sql` | 11 task categories + ~35 sub-categories |
+| `023_task_tables.sql` | 8 task categories + 15 sub-categories (existing DBs reset to this list by `ddl/091_reset_task_categories.sql`) |
 | `033_add_superuser_role.sql` | The `Superuser` role |
 | `068_survey_seed_sundargarh.sql` | ~190 real survey questions for the Sundargarh AI Virtual Classroom project |
 | `069_survey_seed_sikkim.sql` | ~90 real survey questions for the Sikkim project |
 | `072_survey_section_qtype_normalize.sql` | The 6 fixed `survey_question_type` rows (text/number/boolean/select/photo/decimal) |
 | `077_expense_faulty_item_dispatch.sql` | The `Faulty Item Sent To Store` expense purpose row |
+| `095_documentation.sql` | 8 documentation report types + the states each one applies to |
 
 **Not here, left in `ddl/` on purpose:** `030_company_module_settings.sql`,
 `031_module_settings_unified.sql`, `034_state_module_settings.sql`,

@@ -9,7 +9,9 @@ CREATE OR REPLACE FUNCTION fn_location_update(
   p_pincode      VARCHAR,
   p_desc         VARCHAR,
   p_inst_id      INT,
-  p_inst_name    VARCHAR DEFAULT NULL
+  p_inst_name    VARCHAR DEFAULT NULL,
+  p_project_id   INT     DEFAULT NULL,
+  p_project_name VARCHAR DEFAULT NULL
 )
 RETURNS SETOF locations AS $$
 BEGIN
@@ -23,7 +25,13 @@ BEGIN
     geo_pincode      = COALESCE(p_pincode,  geo_pincode),
     description      = COALESCE(p_desc,     description),
     institution_id   = COALESCE(p_inst_id,  institution_id),
-    institution_name = COALESCE(p_inst_name, institution_name),
+    institution_name = COALESCE(p_inst_name,
+                                (SELECT i.institution_name FROM institution i WHERE i.institute_id = p_inst_id),
+                                institution_name),
+    project_id       = COALESCE(p_project_id, project_id),
+    project_name     = COALESCE(p_project_name,
+                                (SELECT pr.project_name FROM project pr WHERE pr.project_id = p_project_id),
+                                project_name),
     updated_at       = NOW()
   WHERE location_id = p_id
   RETURNING *;

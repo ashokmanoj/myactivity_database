@@ -62,8 +62,8 @@ BEGIN
         t.interval_type,
         t.interval_days,
         t.remarks,
-        -- Same real-progress derivation as fn_task_get_all — see its comment.
-        COALESCE(ast.status_name, t.status) AS status,
+        -- Stored status — see fn_task_get_all's comment.
+        t.status,
         t.created_by,
         t.created_at
     FROM assign_task_list t
@@ -72,14 +72,6 @@ BEGIN
     LEFT JOIN task_sub_category s ON s.sub_category_id   = t.sub_category_id
     LEFT JOIN user_tbl          u ON u.user_id            = t.executive_id
     LEFT JOIN institution       i ON i.institute_id       = t.institution_id
-    LEFT JOIN LATERAL (
-        SELECT ta.status_id
-        FROM task_activity ta
-        WHERE ta.task_id = t.task_id AND ta.is_active = 1
-        ORDER BY ta.created_at DESC
-        LIMIT 1
-    ) latest_ta ON true
-    LEFT JOIN activity_status ast ON ast.id = latest_ta.status_id
     WHERE t.task_id = p_task_id;
 END;
 $$ LANGUAGE plpgsql;

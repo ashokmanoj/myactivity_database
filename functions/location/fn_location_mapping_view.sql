@@ -66,7 +66,7 @@ BEGIN
         i.institute_id,
         COALESCE(i.institution_name, l.institution_name)::VARCHAR,
         i.institute_code,
-        p.project_name,
+        COALESCE(p.project_name, l.project_name)::VARCHAR,
         d.district_name,
         b.block_name,
         i.pincode,
@@ -91,11 +91,11 @@ BEGIN
     FROM locations l
     JOIN      user_tbl    u ON u.user_id      = l.user_id
     LEFT JOIN institution i ON i.institute_id = l.institution_id
-    LEFT JOIN project     p ON p.project_id   = i.project_id
+    LEFT JOIN project     p ON p.project_id   = COALESCE(l.project_id, i.project_id)
     LEFT JOIN district    d ON d.district_id  = i.district_id
     LEFT JOIN block       b ON b.block_id     = i.block_id
     WHERE l.is_active = 1
-      AND (p_project_id     IS NULL OR i.project_id     = p_project_id)
+      AND (p_project_id     IS NULL OR p.project_id     = p_project_id)
       AND (p_district_id    IS NULL OR i.district_id    = p_district_id)
       AND (p_block_id       IS NULL OR i.block_id       = p_block_id)
       AND (p_institution_id IS NULL OR i.institute_id   = p_institution_id)
