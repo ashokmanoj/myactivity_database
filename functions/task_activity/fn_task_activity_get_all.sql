@@ -3,6 +3,9 @@
 -- institution, who's visiting), the task (category/sub-category, assigned
 -- start date, district), and activity_status (status name), plus an images
 -- array (task_activity_images). Feeds the Activity List screen's card UI.
+-- Also carries the visit's start/end photo and flags whether this is the
+-- first / last activity of its visit (by created_at): the web shows the
+-- visit start photo on the first activity and the end photo on the last.
 SET search_path TO myactivity;
 
 CREATE OR REPLACE FUNCTION fn_task_activity_get_all(
@@ -38,7 +41,13 @@ RETURNS TABLE(
     activity_end_at   TIMESTAMPTZ,
     images            JSON,
     created_at        TIMESTAMPTZ,
-    updated_at        TIMESTAMPTZ
+    updated_at        TIMESTAMPTZ,
+    visit_start_image VARCHAR,
+    visit_start_at    TIMESTAMPTZ,
+    visit_end_image   VARCHAR,
+    visit_end_at      TIMESTAMPTZ,
+    is_first_in_visit BOOLEAN,
+    is_last_in_visit  BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -54,7 +63,13 @@ BEGIN
              FROM task_activity_images img WHERE img.task_activity_id = ta.id),
             '[]'::json
         ),
-        ta.created_at, ta.updated_at
+        ta.created_at, ta.updated_at,
+        v.visit_start_image, v.visit_start_at,
+        v.visit_end_image,   v.visit_end_at,
+        COALESCE(ta.id = (SELECT x.id FROM task_activity x WHERE x.visit_uuid = ta.visit_uuid
+                          ORDER BY x.created_at, x.id LIMIT 1), FALSE),
+        COALESCE(ta.id = (SELECT x.id FROM task_activity x WHERE x.visit_uuid = ta.visit_uuid
+                          ORDER BY x.created_at DESC, x.id DESC LIMIT 1), FALSE)
     FROM task_activity ta
     LEFT JOIN visit_details    v   ON v.uuid               = ta.visit_uuid
     LEFT JOIN project          p   ON p.project_id         = v.project_id
