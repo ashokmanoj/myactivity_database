@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS institution (
     block_id         INT          REFERENCES block(block_id),
     address          VARCHAR(500),
     pincode          INT,
-    latitude         NUMERIC(8,6),
-    longitude        NUMERIC(9,6),
+    latitude         NUMERIC,      -- no precision limit: stored exactly as sent (DDL 099)
+    longitude        NUMERIC,
     is_active        SMALLINT     NOT NULL DEFAULT 1,
     created_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMPTZ  NOT NULL DEFAULT NOW()

@@ -182,8 +182,8 @@ CREATE TABLE IF NOT EXISTS locations (
     user_id        INT         NOT NULL REFERENCES user_tbl(user_id),
     location_name  VARCHAR(200),
     location_type  VARCHAR(50),
-    lat            NUMERIC(10,7),
-    lon            NUMERIC(10,7),
+    lat            NUMERIC,        -- no precision limit: stored exactly as sent (DDL 099)
+    lon            NUMERIC,
     geo_address    VARCHAR(500),
     geo_pincode    VARCHAR(10),
     description    VARCHAR(500),
