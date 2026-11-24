@@ -34,9 +34,12 @@ DECLARE
     v_trip_rate       NUMERIC(5,2);
     v_prev_end_ts     BIGINT;
 BEGIN
-    -- Auto-fetch state and district from user_information
+    -- Auto-fetch state and district from user_information. State = state of
+    -- posting, falling back to address state — same rule as the Not Started
+    -- list and Dashboard (POSTING_STATE in distance.controller.js). It drives the
+    -- per-km rate, so an empty one would silently pay the 3.00 default.
     SELECT
-        COALESCE(curr_state, perm_state),
+        NULLIF(TRIM(COALESCE(NULLIF(TRIM(state_of_posting), ''), curr_state, perm_state)), ''),
         district_of_posting
     INTO v_state, v_district
     FROM user_information
@@ -121,6 +124,8 @@ BEGIN
             end_distance_timestamp   = p_end_distance_timestamp,
             total_distance           = v_total_distance,
             total_time               = v_total_time,
+            state                    = COALESCE(state, v_state),
+            district                 = COALESCE(district, v_district),
             rate_per_km              = v_rate,
             required_amount          = v_required_amount,
             approved_amount          = v_required_amount,

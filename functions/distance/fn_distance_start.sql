@@ -15,7 +15,9 @@ RETURNS TABLE(trip_id INT, message TEXT)
 AS $$
 DECLARE
     v_id         INT;
-    v_rate       NUMERIC(5,2);
+    v_rate          NUMERIC(5,2);
+    v_user_state    VARCHAR;
+    v_user_district VARCHAR;
 BEGIN
     IF p_uuid IS NOT NULL THEN
         SELECT id INTO v_id FROM distance_tracking WHERE uuid = p_uuid;
@@ -23,6 +25,19 @@ BEGIN
             RETURN QUERY SELECT v_id, 'EXISTS'::TEXT;
             RETURN;
         END IF;
+    END IF;
+
+    -- No state sent → user's state of posting (address state as fallback),
+    -- same rule as fn_distance_sync; it drives the rate below.
+    IF NULLIF(TRIM(p_state), '') IS NULL THEN
+        SELECT NULLIF(TRIM(COALESCE(NULLIF(TRIM(ui.state_of_posting), ''), ui.curr_state, ui.perm_state)), ''),
+               ui.district_of_posting
+        INTO v_user_state, v_user_district
+        FROM user_information ui
+        WHERE ui.user_id = p_user_id AND ui.is_active = 1
+        LIMIT 1;
+        p_state    := v_user_state;
+        p_district := COALESCE(NULLIF(TRIM(p_district), ''), v_user_district);
     END IF;
 
     -- Rate is looked up from the admin-editable distance_state_rate table
