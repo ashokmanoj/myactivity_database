@@ -30,6 +30,9 @@ DECLARE
     v_total_time      INT;
     v_required_amount NUMERIC(10,2);
     v_start_ts        BIGINT;
+    v_trip_state      VARCHAR;
+    v_trip_rate       NUMERIC(5,2);
+    v_prev_end_ts     BIGINT;
 BEGIN
     -- Auto-fetch state and district from user_information
     SELECT
@@ -93,8 +96,22 @@ BEGIN
         ) seg
         WHERE b_lat IS NOT NULL;
 
-        SELECT dt.start_distance_timestamp INTO v_start_ts
+        SELECT dt.start_distance_timestamp, dt.state, dt.rate_per_km, dt.end_distance_timestamp
+        INTO v_start_ts, v_trip_state, v_trip_rate, v_prev_end_ts
         FROM distance_tracking dt WHERE dt.id = v_id;
+
+        -- Ending: today's rate for the trip's own state, stored on the trip so
+        -- later GPS recalcs (fn_gps_bulk_create) use the same rate. A repeated
+        -- end of an already-ended trip keeps the rate it was ended at, so a
+        -- rate change never alters past trips.
+        IF v_prev_end_ts IS NOT NULL THEN
+            v_rate := v_trip_rate;
+        ELSE
+            SELECT r.rate_per_km INTO v_rate
+            FROM distance_state_rate r
+            WHERE LOWER(r.state) = LOWER(COALESCE(v_trip_state, v_state)) AND r.is_active = 1;
+            v_rate := COALESCE(v_rate, 3.00);
+        END IF;
 
         v_total_time      := ((p_end_distance_timestamp - v_start_ts) / 1000)::INT;
         v_required_amount := (COALESCE(v_total_distance, 0) / 1000.0) * v_rate;
@@ -104,6 +121,7 @@ BEGIN
             end_distance_timestamp   = p_end_distance_timestamp,
             total_distance           = v_total_distance,
             total_time               = v_total_time,
+            rate_per_km              = v_rate,
             required_amount          = v_required_amount,
             approved_amount          = v_required_amount,
             payment_status           = 'Processing'
