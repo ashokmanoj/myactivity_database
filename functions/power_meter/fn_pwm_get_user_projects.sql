@@ -30,10 +30,8 @@ BEGIN
       RETURN;
     END IF;
 
-    SELECT NULLIF(TRIM(ui.state_of_posting), '')
-    INTO v_state
-    FROM user_information ui
-    WHERE ui.user_id = p_user_id;
+    -- State of posting, falling back to address state
+    v_state := fn_user_posting_state(p_user_id);
 
     RETURN QUERY
     SELECT p.project_id, p.project_name

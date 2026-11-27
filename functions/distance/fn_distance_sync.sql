@@ -53,11 +53,17 @@ BEGIN
         WHERE uim.user_id = p_user_id AND uim.active = 1 AND uim.rm_user_id IS NOT NULL
         LIMIT 1;
     END IF;
+    -- Name match is restricted to RM-role users: a non-RM user who happens to
+    -- share the RM's name (e.g. a test executive account) must never be
+    -- stored as the trip's RM, or the trip disappears from the real RM's view.
     IF p_rm_user_id IS NULL THEN
         SELECT u.user_id INTO p_rm_user_id
         FROM user_tbl u
-        JOIN user_information ui ON ui.user_id = p_user_id
-        WHERE u.full_name = ui.reporting_rm AND u.is_active = 1
+        JOIN user_information rui ON rui.user_id = u.user_id
+        JOIN roles r              ON r.role_id   = rui.role_id
+        JOIN user_information ui  ON ui.user_id  = p_user_id
+        WHERE TRIM(u.full_name) = TRIM(ui.reporting_rm) AND u.is_active = 1
+          AND r.role_name IN ('Regional Manager', 'Regional Manager Head')
         LIMIT 1;
     END IF;
 

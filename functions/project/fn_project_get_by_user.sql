@@ -1,22 +1,19 @@
 -- Function: fn_project_get_by_user  |  Domain: project
--- Projects whose state matches the given user's own state — same
--- curr_state-then-perm_state resolution the frontend already did client-side
--- (fetch the user's profile, then filter the full project list in JS) for
--- RM/RMH project-dropdown scoping; this just moves it server-side.
+-- Projects in the given user's own state (fn_user_posting_state: state of
+-- posting, falling back to address state) — e.g. scoping an RM/RMH's or an
+-- executive's project dropdown. Match ignores case and stray spaces.
 -- Returns no rows (not "every project") if the user has no state on file.
 CREATE OR REPLACE FUNCTION fn_project_get_by_user(p_user_id INT)
 RETURNS SETOF project AS $$
 DECLARE
   v_state VARCHAR;
 BEGIN
-  SELECT COALESCE(NULLIF(TRIM(ui.curr_state), ''), NULLIF(TRIM(ui.perm_state), ''))
-  INTO v_state
-  FROM user_information ui
-  WHERE ui.user_id = p_user_id;
+  v_state := fn_user_posting_state(p_user_id);
 
   RETURN QUERY
   SELECT * FROM project
   WHERE is_active = 1
-    AND state = v_state;
+    AND v_state IS NOT NULL
+    AND LOWER(TRIM(state)) = LOWER(v_state);
 END;
 $$ LANGUAGE plpgsql;

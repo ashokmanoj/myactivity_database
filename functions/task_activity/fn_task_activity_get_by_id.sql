@@ -32,7 +32,11 @@ RETURNS TABLE(
     activity_end_at   TIMESTAMPTZ,
     images            JSON,
     created_at        TIMESTAMPTZ,
-    updated_at        TIMESTAMPTZ
+    updated_at        TIMESTAMPTZ,
+    class_run_status_id INT,
+    class_run_status  VARCHAR,
+    vsat_status_id    INT,
+    vsat_status       VARCHAR
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -48,8 +52,12 @@ BEGIN
              FROM task_activity_images img WHERE img.task_activity_id = ta.id),
             '[]'::json
         ),
-        ta.created_at, ta.updated_at
+        ta.created_at, ta.updated_at,
+        ad.class_run_status_id, crs.option_name, ad.vsat_status_id, vs.option_name
     FROM task_activity ta
+    LEFT JOIN activity_details ad  ON ad.task_activity_id  = ta.id AND ad.is_active = 1
+    LEFT JOIN yes_no_option    crs ON crs.id               = ad.class_run_status_id
+    LEFT JOIN yes_no_option    vs  ON vs.id                = ad.vsat_status_id
     LEFT JOIN visit_details    v   ON v.uuid               = ta.visit_uuid
     LEFT JOIN project          p   ON p.project_id         = v.project_id
     LEFT JOIN institution      i   ON i.institute_id        = v.institution_id

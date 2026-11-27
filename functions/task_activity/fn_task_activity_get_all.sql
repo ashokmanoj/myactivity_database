@@ -6,6 +6,8 @@
 -- Also carries the visit's start/end photo and flags whether this is the
 -- first / last activity of its visit (by created_at): the web shows the
 -- visit start photo on the first activity and the end photo on the last.
+-- class_run_status / vsat_status (Yes / No, with their ids) come from
+-- activity_details (DDL 101) + the yes_no_option master (DDL 100).
 SET search_path TO myactivity;
 
 CREATE OR REPLACE FUNCTION fn_task_activity_get_all(
@@ -47,7 +49,11 @@ RETURNS TABLE(
     visit_end_image   VARCHAR,
     visit_end_at      TIMESTAMPTZ,
     is_first_in_visit BOOLEAN,
-    is_last_in_visit  BOOLEAN
+    is_last_in_visit  BOOLEAN,
+    class_run_status_id INT,
+    class_run_status  VARCHAR,
+    vsat_status_id    INT,
+    vsat_status       VARCHAR
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -69,8 +75,12 @@ BEGIN
         COALESCE(ta.id = (SELECT x.id FROM task_activity x WHERE x.visit_uuid = ta.visit_uuid
                           ORDER BY x.created_at, x.id LIMIT 1), FALSE),
         COALESCE(ta.id = (SELECT x.id FROM task_activity x WHERE x.visit_uuid = ta.visit_uuid
-                          ORDER BY x.created_at DESC, x.id DESC LIMIT 1), FALSE)
+                          ORDER BY x.created_at DESC, x.id DESC LIMIT 1), FALSE),
+        ad.class_run_status_id, crs.option_name, ad.vsat_status_id, vs.option_name
     FROM task_activity ta
+    LEFT JOIN activity_details ad  ON ad.task_activity_id  = ta.id AND ad.is_active = 1
+    LEFT JOIN yes_no_option    crs ON crs.id               = ad.class_run_status_id
+    LEFT JOIN yes_no_option    vs  ON vs.id                = ad.vsat_status_id
     LEFT JOIN visit_details    v   ON v.uuid               = ta.visit_uuid
     LEFT JOIN project          p   ON p.project_id         = v.project_id
     LEFT JOIN institution      i   ON i.institute_id        = v.institution_id

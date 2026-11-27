@@ -54,11 +54,15 @@ BEGIN
         WHERE uim.user_id = p_user_id AND uim.active = 1 AND uim.rm_user_id IS NOT NULL
         LIMIT 1;
     END IF;
+    -- Name match restricted to RM-role users (see fn_distance_sync).
     IF p_rm_user_id IS NULL THEN
         SELECT u.user_id INTO p_rm_user_id
         FROM user_tbl u
-        JOIN user_information ui ON ui.user_id = p_user_id
-        WHERE u.full_name = ui.reporting_rm AND u.is_active = 1
+        JOIN user_information rui ON rui.user_id = u.user_id
+        JOIN roles r              ON r.role_id   = rui.role_id
+        JOIN user_information ui  ON ui.user_id  = p_user_id
+        WHERE TRIM(u.full_name) = TRIM(ui.reporting_rm) AND u.is_active = 1
+          AND r.role_name IN ('Regional Manager', 'Regional Manager Head')
         LIMIT 1;
     END IF;
 
